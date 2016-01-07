@@ -1,0 +1,3457 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head>
+<style type="text/css">
+.zf {
+    font-size : small;
+    background-color : #fffbc0;
+    border-style : solid;
+    border-color : #fff949;
+    border-width : 1px;
+    color : #0d039c;
+  }
+</style>
+
+<title>Mini-XML 程序员开发手册, Version 2.5</title>
+<meta name="author" content="Michael R. Sweet">
+<meta name="Translator" content="ZhuFeng">
+<meta name="copyright" content="Copyright 2003-2008">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></style>
+</head><body>
+<h1 align="center"><a name="CONTENTS"> 目录</a></h1>
+<div class="zf" align="right">中文翻译：Z.F , mail: zhfjyq@gmail.com ,<a href="http://blog.csdn.net/bluesonic">http://blog.csdn.net/bluesonic</a></div>
+<br>
+<br><b><a href="#INTRO">序言</a></b>
+<ul>
+<li><a href="#1_1">本文结构 </a></li>
+<li><a href="#1_2">词法约定 </a></li>
+<li><a href="#1_3">缩略语 </a></li>
+<li><a href="#1_4">其他参考 </a></li>
+<li><a href="#1_5">法律信息 </a></li>
+</ul>
+<b><a href="#INSTALL">构建，安装，以及打包Mini-XML </a></b>
+<ul>
+<li><a href="#2_1">编译 Mini-XML</a>
+<ul>
+<li><a href="#2_1_1">使用 Visual C++ 进行编译</a></li>
+<li><a href="#2_1_2"> 使用命令行工具进行编译 </a></li>
+</ul>
+</li>
+<li><a href="#2_2">安装 Mini-XML</a></li>
+<li><a href="#2_3">创建 Mini-XML 包</a></li>
+</ul>
+<b><a href="#BASICS">Mini-XML 入门</a></b>
+<ul>
+<li><a href="#3_1">基础知识</a></li>
+<li><a href="#3_2">节点</a></li>
+<li><a href="#3_3">创建 XML 文档 </a></li>
+<li><a href="#3_4">加载 XML</a></li>
+<li><a href="#3_5">保存 XML</a>
+<ul>
+<li><a href="#3_5_1">控制自动输出换行 </a></li>
+</ul>
+</li>
+<li><a href="#3_6">搜索和遍历节点 </a></li>
+</ul>
+<b><a href="#ADVANCED">更多的 Mini-XML 编程技术</a></b>
+<ul>
+<li><a href="#LOAD_CALLBACKS">加载回调函数 </a></li>
+<li><a href="#SAVE_CALLBACKS">保存回调函数 </a></li>
+<li><a href="#4_3">用户定义数据类型</a></li>
+<li><a href="#4_4">改变节点的值</a></li>
+<li><a href="#4_5">格式化文本</a></li>
+<li><a href="#4_6">索引</a></li>
+<li><a href="#4_7">SAX (流方式解析) 加载文档</a></li>
+</ul>
+<b><a href="#MXMLDOC">使用 mxmldoc 工具</a></b>
+<ul>
+<li><a href="#5_1">基础知识</a></li>
+<li><a href="#5_2">为你的代码添加注释</a></li>
+<li><a href="#5_3">标题、分段名和简介</a></li>
+</ul>
+<b><a href="#LICENSE">Mini-XML 许可信息</a></b>
+<br>
+<br><b><a href="#RELNOTES">发行说明</a></b>
+<ul></ul>
+<b><a href="#REFERENCE">库参考手册</a></b>
+<ul>
+<li><a href="#8_1">目录</a></li>
+<li><a href="#FUNCTIONS">函数</a>
+<ul>
+<li><a href="#mxmlAdd">mxmlAdd</a></li>
+<li><a href="#mxmlDelete">mxmlDelete</a></li>
+<li><a href="#8_2_3">mxmlElementDeleteAttr</a></li>
+<li><a href="#mxmlElementGetAttr">mxmlElementGetAttr</a></li>
+<li><a href="#mxmlElementSetAttr">mxmlElementSetAttr</a></li>
+<li><a href="#8_2_6">mxmlElementSetAttrf</a></li>
+<li><a href="#mxmlEntityAddCallback">mxmlEntityAddCallback</a></li>
+<li><a href="#mxmlEntityGetName">mxmlEntityGetName</a></li>
+<li><a href="#mxmlEntityGetValue">mxmlEntityGetValue</a></li>
+<li><a href="#mxmlEntityRemoveCallback">mxmlEntityRemoveCallback</a></li>
+<li><a href="#mxmlFindElement">mxmlFindElement</a></li>
+<li><a href="#mxmlIndexDelete">mxmlIndexDelete</a></li>
+<li><a href="#mxmlIndexEnum">mxmlIndexEnum</a></li>
+<li><a href="#mxmlIndexFind">mxmlIndexFind</a></li>
+<li><a href="#mxmlIndexNew">mxmlIndexNew</a></li>
+<li><a href="#mxmlIndexReset">mxmlIndexReset</a></li>
+<li><a href="#mxmlLoadFd">mxmlLoadFd</a></li>
+<li><a href="#mxmlLoadFile">mxmlLoadFile</a></li>
+<li><a href="#mxmlLoadString">mxmlLoadString</a></li>
+<li><a href="#8_2_20">mxmlNewCDATA</a></li>
+<li><a href="#8_2_21">mxmlNewCustom</a></li>
+<li><a href="#mxmlNewElement">mxmlNewElement</a></li>
+<li><a href="#mxmlNewInteger">mxmlNewInteger</a></li>
+<li><a href="#mxmlNewOpaque">mxmlNewOpaque</a></li>
+<li><a href="#mxmlNewReal">mxmlNewReal</a></li>
+<li><a href="#mxmlNewText">mxmlNewText</a></li>
+<li><a href="#mxmlNewTextf">mxmlNewTextf</a></li>
+<li><a href="#8_2_28">mxmlNewXML</a></li>
+<li><a href="#8_2_29">mxmlRelease</a></li>
+<li><a href="#mxmlRemove">mxmlRemove</a></li>
+<li><a href="#8_2_31">mxmlRetain</a></li>
+<li><a href="#8_2_32">mxmlSAXLoadFd</a></li>
+<li><a href="#8_2_33">mxmlSAXLoadFile</a></li>
+<li><a href="#8_2_34">mxmlSAXLoadString</a></li>
+<li><a href="#mxmlSaveAllocString">mxmlSaveAllocString</a></li>
+<li><a href="#mxmlSaveFd">mxmlSaveFd</a></li>
+<li><a href="#mxmlSaveFile">mxmlSaveFile</a></li>
+<li><a href="#mxmlSaveString">mxmlSaveString</a></li>
+<li><a href="#8_2_39">mxmlSetCDATA</a></li>
+<li><a href="#8_2_40">mxmlSetCustom</a></li>
+<li><a href="#mxmlSetCustomHandlers">mxmlSetCustomHandlers</a></li>
+<li><a href="#mxmlSetElement">mxmlSetElement</a></li>
+<li><a href="#mxmlSetErrorCallback">mxmlSetErrorCallback</a></li>
+<li><a href="#mxmlSetInteger">mxmlSetInteger</a></li>
+<li><a href="#mxmlSetOpaque">mxmlSetOpaque</a></li>
+<li><a href="#mxmlSetReal">mxmlSetReal</a></li>
+<li><a href="#mxmlSetText">mxmlSetText</a></li>
+<li><a href="#mxmlSetTextf">mxmlSetTextf</a></li>
+<li><a href="#8_2_49">mxmlSetWrapMargin</a></li>
+<li><a href="#mxmlWalkNext">mxmlWalkNext</a></li>
+<li><a href="#mxmlWalkPrev">mxmlWalkPrev</a></li>
+</ul>
+</li>
+<li><a href="#TYPES">类型定义(typedef)</a>
+<ul>
+<li><a href="#mxml_attr_t">mxml_attr_t</a></li>
+<li><a href="#mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a></li>
+<li><a href="#mxml_custom_load_cb_t">mxml_custom_load_cb_t</a></li>
+<li><a href="#mxml_custom_save_cb_t">mxml_custom_save_cb_t</a></li>
+<li><a href="#8_3_5">mxml_custom_t</a></li>
+<li><a href="#mxml_element_t">mxml_element_t</a></li>
+<li><a href="#mxml_error_cb_t">mxml_error_cb_t</a></li>
+<li><a href="#mxml_index_t">mxml_index_t</a></li>
+<li><a href="#mxml_load_cb_t">mxml_load_cb_t</a></li>
+<li><a href="#mxml_node_t">mxml_node_t</a></li>
+<li><a href="#mxml_save_cb_t">mxml_save_cb_t</a></li>
+<li><a href="#mxml_sax_cb_t">mxml_sax_cb_t</a></li>
+<li><a href="#mxml_sax_event_t">mxml_sax_event_t</a></li>
+<li><a href="#mxml_text_t">mxml_text_t</a></li>
+<li><a href="#mxml_value_t">mxml_value_t</a></li>
+</ul>
+</li>
+<li><a href="#STRUCTURES">结构(struct)</a>
+<ul>
+<li><a href="#mxml_attr_s">mxml_attr_s</a></li>
+<li><a href="#8_4_2">mxml_custom_s</a></li>
+<li><a href="#mxml_element_s">mxml_element_s</a></li>
+<li><a href="#mxml_index_s">mxml_index_s</a></li>
+<li><a href="#mxml_node_s">mxml_node_s</a></li>
+<li><a href="#mxml_text_s">mxml_text_s</a></li>
+</ul>
+</li>
+<li><a href="#UNIONS">联合(union)</a>
+<ul>
+<li><a href="#mxml_value_u">mxml_value_u</a></li>
+</ul>
+</li>
+<li><a href="#ENUMERATIONS">Constants</a>
+<ul>
+<li><a href="#mxml_sax_event_e">mxml_sax_event_e</a></li>
+<li><a href="#mxml_type_e">mxml_type_e</a></li>
+</ul>
+</li>
+</ul>
+<b><a href="#SCHEMA">XML方案 (用于自动化文档生成工具 mxmldoc)</a></b>
+<ul></ul>
+<hr noshade="noshade">
+<h1 align="right"><a name="INTRO"><img alt="0" src="minixml-cn_files/0.gif" align="right" height="100" hspace="10" width="100"></a>序言</h1>
+<p>这份程序员参考手册描述了 Mini-XML 2.5版本, 一个小型的 XML 解析库，使用它可以使你的C或者C++应用程序方便的进行XML数据文件的读写
+ </p>
+<p>Mini-XML 最初是为了<a href="http://gutenprint.sf.net/">
+Gutenprint</a> 项目而开发，目的是为了替换既大又笨重的<tt>
+libxml2</tt> 库， 想要实现一个小型且易于使用的一些东西. 它开始于2003年6月的一个早晨，当时罗伯特发表了下面几句话到开发者列表：
+    </p>
+<blockquote><em>"这真是糟糕，我们需要libxml2,但反复看来，我们的XML解析器仅需要我们可以操作的一小部分。" </em></blockquote>
+<p>我做了以下回复:</p>
+<blockquote><em>"考虑到你使用XML仅在一个有限的范围中，那么只使用几百行代码来编写一个微型XML (mini-XML) API，应该是很简单的。"</em></blockquote>
+<p>我接受了这个挑战，用了两天的时间进行疯狂的编码，并且公开发布了第一个mini-XML版本，总共是696行代码。然后，罗伯特迅速把mini-XML整合到 Gutenprint 中，并且移除了libxml2库</p>
+<p>感谢很多不同的开发者给我的回馈和支持， 从那以后，Mini-XML逐渐发展为一个提供更多完整的XML实现，当前已经高达3441行代码，但已经可以和103893行代码的libxml2 2.6.9版本相比较了。
+</p>
+<div class="zf">译者：仅用了两天时间，作者真是大牛啊！我较喜欢Mini-XML，我也用过TinyXML，libexpat,libxml2等解析器，相比之下Mini-XML实现了一个非常简洁且功能适用的解析器，很适合我的需求：DOM型解析器、解析小型的XML文件，不进行错误恢复及校验，简单易用，且使用纯ANSI-C实现，方便移植到嵌入系统中。评价：很好很强大，而且很简单。Z.F</div>
+<p>除了Gutenprint ，mini-XML当前已经应用于以下的项目/应用软件:</p>
+<ul>
+<li><a href="http://www.cups.org/">Common UNIX Printing System</a></li>
+<li><a href="http://www.cups.org/ddk/">CUPS Driver Development Kit</a></li>
+<li><a href="http://zynaddsubfx.sourceforge.net/">ZynAddSubFX</a></li>
+</ul>
+<p>
+如果您希望将您的项目添加到此列表或者从此列表中删除，或者如果您有任何意见和想法，或者想要发布关于使用mini-XML的经验，请给我发电子邮件（ mxml@easysw.com ）
+</p>
+<h2><a name="1_1">本文档组织结构</a></h2>
+<p>本手册由以下章节和附录组成:</p>
+<ul>
+<li>第一章, "<a href="#INSTALL">构建，安装，以及打包Mini-XML</a>", 关于mini-XML在编译、安装以及打包方面的说明.</li>
+<li>第二章, "<a href="#BASICS">Mini-XML 入门</a>",如何在你的应用程序中使用mini-XML.
+</li>
+<li>第三章, "<a href="#ADVANCED">更多的 Mini-XML 编程技术</a>展示了使用mini-XML库的更多的方法。
+</li>
+<li>第四章, "<a href="#MXMLDOC">使用 mxmldoc 工具</a>",
+ 描述如何使用<tt>mxmldoc(1)</tt> 程序来生成文档.</li>
+<li>附录 A, "<a href="#LICENSE">Mini-XML 许可信息 </a>",使用和发布mini-XML的条款及条件。</li>
+<li>附录 B, "<a href="#RELNOTES">发行说明</a>", 列出了每次mini-XML发布版本的改变信息.</li>
+<li>附录 C, "<a href="#REFERENCE">库参考手册</a>", 包含了关于mini-XML的完整参考信息,使用 <tt>mxmldoc</tt>生成.</li>
+<li>附录 D, "<a href="#SCHEMA">XML方案</a>", 显示了 <tt>mxmldoc</tt> 生成XML文件时使用的 XML 方案.</li>
+</ul>
+
+<!-- NEED 10 -->
+<h2><a name="1_2">词法约定 </a></h2>
+<p>在这篇手册中使用了一些字体和风格的约定.下面是一些例子含义和使用说明:</p>
+<dl>
+<dt><code>lpstat</code>
+<br> <code>lpstat(1)</code></dt>
+<dd>命令名称;如果在一章中第一次提及这个系统命令或者函数，则后面跟随手册页编号。<div class="zf">译者：上面指Linux 的manpages 手册，使用man命令查看。Z.F</div>
+<br>
+<br></dd>
+<dt><var>/var</var>
+<br><var> /usr/share/cups/data/testprint.ps</var></dt>
+<dd>文件或者目录.
+<br>
+<br></dd>
+<dt><tt>Request ID is Printer-123</tt></dt>
+<dd>屏幕输出.
+<br>
+<br></dd>
+<dt><kbd>lp -d printer filename ENTER</kbd></dt>
+<dd>用户输入的文字，特殊键如<kbd>ENTER</kbd> 总是使用大写.
+<br>
+<br></dd>
+<dt>12.3</dt>
+<dd>文本中的数字，使用(.)来表示小数点.
+<br>
+<br></dd>
+</dl>
+
+<!-- NEED 10 -->
+<h2><a name="1_3">缩略词</a></h2>
+<p>下面是在本手册中使用的缩略词:</p>
+<dl>
+<dt>Gb</dt>
+<dd>GB, 即 1073741824 字节，1*1024*1024*1024 字节
+<br>
+<br></dd>
+<dt>kb</dt>
+<dd> 即 1024 字节，1*1024 字节
+<br>
+<br></dd>
+<dt>Mb</dt>
+<dd>兆, or 1048576 bytes,1*1024*1024 字节
+<br>
+<br></dd>
+<dt>UTF-8, UTF-16</dt>
+<dd>统一的字符编码标准, 8-位 或 16-位
+<br>
+<br></dd>
+<dt>W3C</dt>
+<dd>万维网联盟
+<br>
+<br></dd>
+<dt>XML</dt>
+<dd>可扩展标记语言 
+<br>
+<br></dd>
+</dl>
+
+<!-- NEED 12 -->
+<h2><a name="1_4">其他参考</a></h2>
+<dl>
+<dt>The Unicode Standard, Version 4.0, Addison-Wesley, ISBN
+ 0-321-18578-1</dt>
+<dd>定义了用于XML的Unicode字符集.
+<br>
+<br></dd>
+<dt><a href="http://www.w3.org/TR/2004/REC-xml-20040204/">Extensible
+ Markup Language (XML) 1.0 (Third Edition)</a></dt>
+<dd>W3C制定的XML标准.
+<br>
+<br></dd>
+</dl>
+
+<!-- NEED 6 -->
+<h2><a name="1_5">法律资料</a></h2>
+<p>The Mini-XML library is copyright 2003-2008 by Michael Sweet.</p>
+<p>This library is free software; you can redistribute it and/or modify
+ it under the terms of the <a href="#LICENSE">GNU Library General Public
+ License</a> as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.</p>
+<p>This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Library General Public License for more details.</p>
+<hr noshade="noshade">
+<h1 align="right"><a name="INSTALL"><img alt="1" src="minixml-cn_files/1.gif" align="right" height="100" hspace="10" width="100"></a>构建，安装，以及打包Mini-XML </h1>
+<p>这一章描述了如何在你的系统上使用源码包构建，安装以及打包Mini-XML,你将需要一个ANSI/ISO-C兼容的C编译器来构建Mini-XML,GCC可以工作，这也是大多数厂家的C编译器。如果你需要在Windows平台上构建， 我们建议使用Virtual C++环境和解决方案文件.对于其他的操作系统，你在C编译器之外需要一个POSIX兼容的shell和<tt>make</tt>程序.
+.</p>
+<h2><a name="2_1">编译 Mini-XML</a></h2>
+<p>Mini-XML 同时具备基于 autoconf的配置脚本和Virtual C++的解决方案，可以用来编译库和关联的其他工具.</p>
+<h3><a name="2_1_1">使用 Visual C++ 编译</a></h3>
+<p>打开在目录<var> vcnet</var> 下的<var> mxml.sln</var> 解决方案.
+ 选择需要构建的配置,"Debug" (缺省选项) 或者
+ "Release", 并且 从<var>
+ Build</var> 菜单中选择<var> Build Solution</var>项.</p>
+<h3><a name="2_1_2">使用命令行工具编译</a></h3>
+<p>在你的系统上键入下面的命令来配置Mini-XML源代码:</p>
+<pre>    <kbd>./configure ENTER</kbd>
+</pre>
+<p>缺省的安装前缀是<var> /usr/local</var>, 这可以被覆盖使用 <kbd>--prefix</kbd> 选项:</p>
+<pre>    <kbd>./configure --prefix=/foo ENTER</kbd>
+</pre>
+<p>其他配置选项可以使用命令<kbd>--help</kbd>
+ 选项进行查看:</p>
+<pre>    <kbd>./configure --help ENTER</kbd>
+</pre>
+<p>当你配置完毕,使用<tt>make(1)</tt>程序来构建并且运行测试程序来校验是否工作正常，如下：
+</p>
+<pre>    <kbd>make ENTER</kbd>
+</pre>
+<h2><a name="2_2">安装 Mini-XML</a></h2>
+<p>如果你使用 Visual C++, 分别拷贝<var> mxml.lib</var> 和 <var>
+ mxml.h</var> 文件到 Visual C++<var> lib</var> 和<var> include<var>
+ 目录.</var></var></p>
+<p>否则,使用<tt>make</tt> 命令和<kbd>install</kbd>参数来安装Mini-XML到配置的目录中:</p>
+<pre>    <kbd>make install ENTER</kbd>
+</pre>
+<h2><a name="2_3">创建 Mini-XML 包</a></h2>
+<p>Mini-XML 包含两个文件可以被用来创建二进制发行包.第一个文件是<var> mxml.spec</var> 可以被使用通过<tt>
+rpmbuild(8)</tt> 软件来创建Red Hat 包管理器("RPM")的发行包，通常用于Linux平台. <tt>rpmbuild</tt>
+ 可以自己进行软件编译, 你可以为它提供一个Mini-XML 的tar文件来编译整个包，使用以下命令:</p>
+<pre>    <kbd>rpmbuild -ta mxml-<i>version</i>.tar.gz ENTER</kbd>
+</pre>
+<p>第二个文件是<var> mxml.list</var>被用于<tt>
+epm(1)</tt> 程序创建不同格式的软件包.
+<tt>epm</tt> 程序可以从以下网址获得:</p>
+<pre>    <a href="http://www.easysw.com/epm/">http://www.easysw.com/epm/</a>
+</pre>
+<p>使用<tt>make</tt> 命令通过 <kbd>epm</kbd> 目标 来构建一个针对你的系统的便携的本地包:</p>
+<pre>    <kbd>make epm ENTER</kbd>
+</pre>
+<p>为了你方便,这些包保存在子目录<var> dist</var> 中.便携包利用脚本和tar文件安装软件到目标系统中.在展开包文件后,使用<var> mxml.install</var>脚本来安装这个软件.</p>
+<p>这些本地包可以是本地操作系统的原生格式:红帽Linux 的RPM , Debian Linux的DPKG, Solaris的PKG, 等等.使用相应的命令来安装这些原生包.</p>
+<hr noshade="noshade">
+<h1 align="right"><a name="BASICS"><img alt="2" src="minixml-cn_files/2.gif" align="right" height="100" hspace="10" width="100"></a>Mini-XML 入门</h1>
+<p>这一章描述了如何写一个程序使用Mini-XML来访问XML文件中的数据.Mini-XML提供了以下功能:</p>
+<ul>
+<li>在内存中创建和管理XML文档的函数.</li>
+<li>读UTF-8和UTF-16 编码的XML文件和字符串.</li>
+<li>写UTF-8 编码的XML文件和字符串.</li>
+<li>支持任意的元素名称，属性以及属性值，没有任何其他限制，仅受限于有效内存.</li>
+<li>支持整形、浮点、自定义("CDATA")和文本数据类型在"叶"节点.</li>
+<li>提供"查找"、"索引"、以及"步进"函数可以很简单的访问XML文档中的数据.</li>
+</ul>
+<p>Mini-XML 不进行基于"XML方案(SCHEMA)"文件或者其他内容源定义信息的校验和其他类型的处理 ,也不支持其他组织所要求的XML规范.</p>
+<h2><a name="3_1">基础知识</a></h2>
+<p>Mini-XML 提供的一个你需要包含的头文件:</p>
+<pre>    #include &lt;mxml.h&gt;
+</pre>
+<p>把Mini-XML库连接到你的应用程序使用<kbd>
+-lmxml</kbd> 选项:</p>
+<pre>    <kbd>gcc -o myprogram myprogram.c -lmxml ENTER</kbd>
+</pre>
+<p>如果你已经安装<tt>pkg-config(1)</tt> 软件, 你可以使用它来为你的安装确定适当的编译和连接选项:</p>
+<pre>    <kbd>pkg-config --cflags mxml ENTER</kbd>
+    <kbd>pkg-config --libs mxml ENTER</kbd>
+</pre>
+<h2><a name="3_2">节点</a></h2>
+<p>每一块XML文件中的信息片断(元素、文本、数字)是一个存储在内存中的"节点(nodes)"
+ .节点使用<a href="#mxml_node_t">
+<tt>mxml_node_t</tt></a> 结构进行定义. 它的<a href="#mxml_type_t"><tt>type</tt>
+</a> 成员变量定义了节点类型（element, integer, opaque, real, or
+ text) 决定了需要从联合(union)类型的成员变量<a href="#mxml_value_t">
+<tt>value</tt></a> 中获取的值.</p>
+
+<!-- NEED 10 -->
+<center>
+<table summary="Mini-XML Node Value Members" border="1" cellpadding="5" cellspacing="0" width="80%"><caption align="bottom"><i> 表 2-1: Mini-XML 节点值的成员变量
+ </i></caption>
+<tbody><tr bgcolor="#cccccc"><th>值</th><th>类型</th><th>节点成员</th></tr>
+<tr><td>用户定义</td><td><tt>void *</tt></td><td><tt>
+node-&gt;value.custom.data</tt></td></tr>
+<tr><td>XML元素</td><td><tt>char *</tt></td><td><tt>
+node-&gt;value.element.name</tt></td></tr>
+<tr><td>整数</td><td><tt>int</tt></td><td><tt>node-&gt;value.integer</tt>
+</td></tr>
+<tr><td>不透明字符串</td><td><tt>char *</tt></td><td><tt>
+node-&gt;value.opaque</tt></td></tr>
+<tr><td>浮点数</td><td><tt>double</tt></td><td><tt>node-&gt;value.real</tt></td>
+</tr>
+<tr><td>文本</td><td><tt>char *</tt></td><td><tt>node-&gt;value.text.string</tt>
+</td></tr>
+</tbody></table>
+</center>
+<div class="zf">译者：节点类型定义枚举参见：<a href="#mxml_type_e">mxml_type_e</a>。Mini-XML中的节点类型定义和其他有些解析器有些不同，其中整数、浮点、和文本节点是指在一个XML元素中一系列的使用空格作为分割的值，每个元素可以拥有多个以上节点，并可以选择使用空格分开，如：&lt;abc&gt;aa bb cc&lt;/abc&gt;，Mini-MXML在使用参数：MXML_TEXT_CALLBACK进行载入时，将在abc元素下面生成3个text类型的子节点。在创建时也可以使用同样的方式创建节点。整数和浮点也是同样方式，但如果转换失败则MiniXML报错。而不透明字符串类型(OPAQUE)则不进行字符串分割，在载入时需要使用MXML_OPAQUE_CALLBACK参数，将所有字符串形成一个子节点。详情见：<a href="#ADVANCED">使用加载回调函数</a>。 Z.F</div>
+
+<p>每一个节点总是有一个成员变量:<tt>user_data</tt> 可以允许你为每一个节点关联你需要的应用数据.</p>
+<p>新的节点可以使用以下函数进行创建 <a href="#mxmlNewElement"><tt>
+mxmlNewElement</tt></a>, <a href="#mxmlNewInteger"><tt>mxmlNewInteger</tt>
+</a>, <a href="#mxmlNewOpaque"><tt>mxmlNewOpaque</tt></a>, <a href="#mxmlNewReal">
+<tt>mxmlNewReal</tt></a>, <a href="#mxmlNewText"><tt>mxmlNewText</tt></a>
+ <a href="#mxmlNewTextf"><tt>mxmlNewTextf</tt></a> <a href="#mxmlNewXML">
+<tt>mxmlNewXML</tt></a> . 只有 elements 可以拥有子节点，顶级节点必须是一个 element , 通常是<tt>&lt;?xml
+ version="1.0"?&gt;</tt> 使用<tt>mxmlNewXML()</tt>函数创建的节点.</p>
+<p>每个节点都有一些关联节点的指针，上(<tt>parent</tt>), 下(<tt>
+child</tt>), 左(<tt>prev</tt>), and 右(<tt>next</tt>) 相对应于当前节点. 如果你有一个XML文件如下所示:</p>
+<pre>    &lt;?xml version="1.0"?&gt;
+    &lt;data&gt;
+        &lt;node&gt;val1&lt;/node&gt;
+        &lt;node&gt;val2&lt;/node&gt;
+        &lt;node&gt;val3&lt;/node&gt;
+        &lt;group&gt;
+            &lt;node&gt;val4&lt;/node&gt;
+            &lt;node&gt;val5&lt;/node&gt;
+            &lt;node&gt;val6&lt;/node&gt;
+        &lt;/group&gt;
+        &lt;node&gt;val7&lt;/node&gt;
+        &lt;node&gt;val8&lt;/node&gt;
+    &lt;/data&gt;
+</pre>
+<p>那么在内存中的文件节点树看上去如下所示:</p>
+<pre>    ?xml
+      |
+    data
+      |
+    node - node - node - group - node - node
+      |      |      |      |       |      |
+    val1   val2   val3     |     val7   val8
+                           |
+                         node - node - node
+                           |      |      |
+                         val4   val5   val6
+</pre>
+<p>这里"-"指向下一个节点，"|"指向第一个子节点。</p>
+<p>当你使用完毕这些XML数据后，使用函数<a href="#mxmlDelete"><tt>
+mxmlDelete</tt></a> 来释放指定节点或者整个XML树节点和它下面所有子节点的内存:</p>
+<pre>    mxmlDelete(tree);
+</pre>
+
+<!-- NEW PAGE -->
+<h2><a name="3_3">创建 XML 文档</a></h2>
+<p>你可以在内存中创建和更新XML文档，使用<tt>
+mxmlNew</tt> 一系列函数. 下面的代码将创建上一章描述的XML文档:</p>
+<pre>    mxml_node_t *xml;    /* &lt;?xml ... ?&gt; */
+    mxml_node_t *data;   /* &lt;data&gt; */
+    mxml_node_t *node;   /* &lt;node&gt; */
+    mxml_node_t *group;  /* &lt;group&gt; */
+
+    xml = mxmlNewXML("1.0");
+
+    data = mxmlNewElement(xml, "data");
+
+        node = mxmlNewElement(data, "node");
+        mxmlNewText(node, 0, "val1");
+        node = mxmlNewElement(data, "node");
+        mxmlNewText(node, 0, "val2");
+        node = mxmlNewElement(data, "node");
+        mxmlNewText(node, 0, "val3");
+
+        group = mxmlNewElement(data, "group");
+
+            node = mxmlNewElement(group, "node");
+            mxmlNewText(node, 0, "val4");
+            node = mxmlNewElement(group, "node");
+            mxmlNewText(node, 0, "val5");
+            node = mxmlNewElement(group, "node");
+            mxmlNewText(node, 0, "val6");
+
+        node = mxmlNewElement(data, "node");
+        mxmlNewText(node, 0, "val7");
+        node = mxmlNewElement(data, "node");
+        mxmlNewText(node, 0, "val8");
+</pre>
+<p>我们首先使用<a href="#mxmlNewXML"><tt>mxmlNewXML</tt></a>函数来创建所有XML文件都需要的标头 <tt>&lt;?xml version="1.0"?&gt;</tt>
+ :</p>
+<pre>    xml = mxmlNewXML("1.0");
+</pre>
+<p>然后我们使用<a href="#mxmlNewElement"><tt>mxmlNewElement</tt></a>函数来创建本文件使用的<tt>&lt;data&gt;</tt>节点.第一个参数指定了父节点(<tt>xml</tt>) ，第二个参数是元素名 (<tt>data</tt>):</p>
+<pre>    data = mxmlNewElement(xml, "data");
+</pre>
+<p>每个在本文件中<tt>&lt;node&gt;...&lt;/node&gt;</tt>之间的部分使用函数<a href="#mxmlNewElement"><tt>
+mxmlNewElement</tt></a> 和 <a href="#mxmlNewText"><tt>mxmlNewText</tt></a>来创建. <tt>mxmlNewText</tt> 的第一个参数指定了父节点 (<tt>node</tt>).第二个参数指定了是否在文本之前添加空白字符，在本例中使用0或者false.最后一个参数指定了需要添加的实际文本:</p>
+<pre>    node = mxmlNewElement(data, "node");
+    mxmlNewText(node, 0, "val1");
+</pre>
+<p>在内存中的XML结果可以被保存或者进行其他处理，就像一个从磁盘或者字符串中读取的文档一样.</p>
+
+<!-- NEW PAGE -->
+<h2><a name="3_4">加载XML</a></h2>
+<p>你可以加载一个XML文件使用函数<a href="#mxmlLoadFile"><tt>
+mxmlLoadFile</tt></a> :</p>
+<pre>    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "r");
+    tree = mxmlLoadFile(NULL, fp,
+                        MXML_TEXT_CALLBACK);
+    fclose(fp);
+</pre>
+<p>第一个参数如果有的话则指定了一个存在的XML父节点.一般你将这个参数等于<tt>NULL</tt>,除非你想要连接多个XML源. 如果此参数等于<tt>NULL</tt>，那么指定的XML文件必须是一个完整的XML文档，文档头部要包含<tt>?xml</tt>元素.</p>
+<p>第二个参数指定了一个标准的文件流，使用 <tt>fopen()</tt> 或者 <tt>popen()</tt>进行打开. 你也可以使用<tt>stdin</tt>，如果你想要实现一个XML过滤器程序.</p>
+<p>第三个参数指定了一个回调函数用于一个新的XML元素节点直接返回的子节点的值类型: <tt>
+MXML_CUSTOM</tt>, <tt>MXML_IGNORE</tt>, <tt>MXML_INTEGER</tt>, <tt>
+MXML_OPAQUE</tt>, <tt>MXML_REAL</tt>, or <tt>MXML_TEXT</tt>. 加载回调函数的细节在<a href="#LOAD_CALLBACKS">第三章</a>做了详细描述. 示例代码使用 <tt>MXML_TEXT_CALLBACK</tt> 常量指定文档中所有的数据节点都包含使用以空格字符分割的文本的值. 其他标准的回调还有<tt>
+MXML_IGNORE_CALLBACK</tt>, <tt>MXML_INTEGER_CALLBACK</tt>, <tt>
+MXML_OPAQUE_CALLBACK</tt>, 和<tt>MXML_REAL_CALLBACK</tt>.</p>
+<p>函数<a href="#mxmlLoadString"><tt>mxmlLoadString</tt></a> 可以从一个字符串中载入XML节点树:</p>
+
+<!-- NEED 10 -->
+<pre>    char buffer[8192];
+    mxml_node_t *tree;
+
+    ...
+    tree = mxmlLoadString(NULL, buffer,
+                          MXML_TEXT_CALLBACK);
+</pre>
+<p>第一个和第三个参数和<tt>
+mxmlLoadFile()</tt>用法一样. 第二个参数指定了指定了字符串或者字符缓冲区用于加载XML，当父节点参数为<tt>NULL</tt>时内容必须为完整的XML文档，包括XML头<tt>?xml</tt>元素.</p>
+
+<!-- NEW PAGE -->
+<h2><a name="3_5">保存 XML</a></h2>
+<p>你可以保存XML文件使用<a href="#mxmlSaveFile"><tt>
+mxmlSaveFile</tt></a> 函数:</p>
+<pre>    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "w");
+    mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+</pre>
+<p>第一个参数为想要保存的XML节点树,一般应该是一个指向你的XML文档顶级节点<tt>?xml</tt>的节点指针.</p>
+<p>第二个单数是一个标准文件流，使用<tt>
+fopen()</tt> 或者 <tt>popen()</tt>来打开. 你也可以使用<tt>stdout</tt> 如果你想要实现一个XML过滤器程序.</p>
+<p>第三个参数是一个空白回调函数用来控制保存文件时插入的"空白"字符."空白回调"的详细信息参见<a href="#SAVE_CALLBACKS">
+第三章</a>. 以上的示例代码使用了<tt>MXML_NO_CALLBACK</tt>常量来指定不需要特别的空白处理.</p>
+<p>函数<a href="#mxmlSaveAllocString"><tt>mxmlSaveAllocString</tt></a>,
+ 和<a href="#mxmlSaveString"><tt>mxmlSaveString</tt></a> 保存XML节点树到一个字符串中:</p>
+<pre>    char buffer[8192];
+    char *ptr;
+    mxml_node_t *tree;
+
+    ...
+    mxmlSaveString(tree, buffer, sizeof(buffer),
+                   MXML_NO_CALLBACK);
+
+    ...
+    ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
+</pre>
+<p>第一个和最后一个参数的用法和函数<tt>
+mxmlSaveFile()</tt>一样. 函数<tt>mxmlSaveString</tt> 给出了一个指针和长度的参数来保存XML文档到一个固定大小的缓冲区中。,
+ <tt>mxmlSaveAllocString()</tt> 返回了使用malloc分配的一个字符串缓冲区<tt>malloc()</tt>.</p>
+<h3><a name="3_5_1">自动折行控制</a></h3>
+<p>当我们保存XML文档时, Mini-XML一般在第75列进行折行，因为这样在终端下最易读. 函数<a href="#mxmlSetWrapMargin">
+<tt>mxmlSetWrapMargin</tt></a> 可以覆盖缺省的折行界限:</p>
+<pre>    /* 设置自动折行到 132 列*/
+    mxmlSetWrapMargin(132);
+
+    /* 取消自动折行*/
+    mxmlSetWrapMargin(0);
+</pre>
+
+<!-- NEW PAGE-->
+<h2><a name="3_6">搜索和遍历节点</a></h2>
+<p>函数<a href="#mxmlWalkPrev"><tt>mxmlWalkPrev</tt></a> and <a href="#mxmlWalkNext">
+<tt>mxmlWalkNext</tt></a>可以被用来遍历XML节点树:</p>
+<pre>    mxml_node_t *node;
+    
+    node = mxmlWalkPrev(current, tree,
+                        MXML_DESCEND);
+
+    node = mxmlWalkNext(current, tree,
+                        MXML_DESCEND);
+</pre>
+<p>另外,你可以搜索一个命名的XML元素/节点,使用函数<a href="#mxmlFindElement">
+<tt>mxmlFindElement</tt></a>:</p>
+<pre>    mxml_node_t *node;
+    
+    node = mxmlFindElement(tree, tree, "name",
+                           "attr", "value",
+                           MXML_DESCEND);
+</pre>
+<p>参数<tt>name</tt>, <tt>attr</tt>, 和<tt>value</tt> 可以被设置为<tt>NULL</tt>作为全部匹配, e.g.:</p>
+
+<!-- NEED 4 -->
+<pre>    /* 搜索第一个 "a" 元素*/
+    node = mxmlFindElement(tree, tree, "a",
+                           NULL, NULL,
+                           MXML_DESCEND);
+</pre>
+
+<!-- NEED 5 -->
+<pre>    /* 搜索第一个"a" 元素并包含"href"属性*/
+    node = mxmlFindElement(tree, tree, "a",
+                           "href", NULL,
+                           MXML_DESCEND);
+</pre>
+
+<!-- NEED 6 -->
+<pre>    /* 搜索第一个"a" 元素并且包含"href"属性等于给出的URL */
+    node = mxmlFindElement(tree, tree, "a",
+                           "href",
+                           "http://www.easysw.com/",
+                           MXML_DESCEND);
+</pre>
+
+<!-- NEED 5 -->
+<pre>    /* 搜索第一个包含"src"属性的XML元素*/
+    node = mxmlFindElement(tree, tree, NULL,
+                           "src", NULL,
+                           MXML_DESCEND);
+</pre>
+
+<!-- NEED 5 -->
+<pre>    /* 搜索第一个包含"src"= "foo.jpg"属性的XML元素 */
+    node = mxmlFindElement(tree, tree, NULL,
+                           "src", "foo.jpg",
+                           MXML_DESCEND);
+</pre>
+<p>你也可以使用同样的功能进行遍历:</p>
+<pre>    mxml_node_t *node;
+
+    for (node = mxmlFindElement(tree, tree,
+                                "name",
+                                NULL, NULL,
+                                MXML_DESCEND);
+         node != NULL;
+         node = mxmlFindElement(node, tree,
+                                "name",
+                                NULL, NULL,
+                                MXML_DESCEND))
+    {
+      ... do something ...
+    }
+</pre>
+
+<!-- NEED 10 -->
+<p>参数<tt>MXML_DESCEND</tt>可以是下面三个常量之一:</p>
+<ul>
+<li><tt>MXML_NO_DESCEND</tt> 含义是不查看任何的子节点在XML元素层次中，仅查看同级的伙伴节点或者父节点直到到达顶级节点或者给出的树的顶级节点.
+<p>"group"节点的上一个节点时它左面的"node"子节点,下一个节点是"group"右面的"node"子节点..
+<br>
+<br></p>
+</li>
+<li><tt>MXML_DESCEND_FIRST</tt>含义是向下搜索到一个节点的第一个匹配子节点，但不再继续向下搜索。你一般使用于遍历一个父节点的直接的子节点。
+,如：在上面的例子中的所有在"?xml"父节点下的所有的"node"和"group"子节点。.
+<p>这个模式仅适用于搜索(search)功能，遍历功能(walk)对待它和 <tt>MXML_DESCEND</tt> 一样，因为每次调用都是首次调用。
+<br>
+<br></p>
+</li>
+<li><tt>MXML_DESCEND</tt>含义是一直向下直到树的根部. "group"节点的上一个节点将是"val3"节点，下一个节点将是"group"的下面的第一个子节点。
+<p>如果你要使用函数<tt>mxmlWalkNext()</tt>从根结点"?xml" 遍历到整个树的结束, 那么这个顺序将如下所示：</p>
+<p><tt>?xml data node val1 node val2 node val3 group node val4 node val5
+ node val6 node val7 node val8</tt></p>
+<p>如果你从"val8"开始并使用函数<tt>mxmlWalkPrev()</tt>进行遍历,
+ 这个顺序将是反的，结束于"?xml"节点.</p>
+</li>
+</ul>
+<hr noshade="noshade">
+<h1 align="right"><a name="ADVANCED"><img alt="3" src="minixml-cn_files/3.gif" align="right" height="100" hspace="10" width="100"></a>更多的 Mini-XML 编程技术</h1>
+<p>这一章显示了更多的在你的应用程序中使用Mini-XML的方法。</p>
+<h2><a name="LOAD_CALLBACKS">Load Callbacks</a></h2>
+<p><a href="#LOAD_XML">第二章</a> 介绍了函数<a href="#mxmlLoadFile">
+<tt>mxmlLoadFile()</tt></a> 和<a href="#mxmlLoadString"><tt>
+mxmlLoadString()</tt></a> . 这些函数的最后一个参数是一个回调函数，决定了在一个XML文档中每个数据节点的值的类型。</p>
+<p>Mini-XML 为简单XML数据文件定义了几个标准的回调函数：</p>
+<ul>
+<li><tt>MXML_INTEGER_CALLBACK</tt> - 所有的数据节点包含以空格分割的整数。</li>
+<li><tt>MXML_OPAQUE_CALLBACK</tt> - 所有的数据节点包含"不透明"字符串（CDATA）。</li>
+<li><tt>MXML_REAL_CALLBACK</tt> - 所有的数据节点包含以空格分割的浮点数。</li>
+<li><tt>MXML_TEXT_CALLBACK</tt> - 所有的数据节点包含以空格分割的文本字符串。</li>
+</ul>
+<p>你可以为更复杂的XML文档提供你自己的回调函数。你的回调函数将接收到一个到当前XML元素节点的指针并且必须为这个XML元素节点返回一个直接子节点的值类型: <tt>MXML_INTEGER</tt>, <tt>MXML_OPAQUE</tt>, <tt>
+MXML_REAL</tt>, 或<tt>MXML_TEXT</tt>.这个函数在这个XML元素和它的全部属性被读取<i>以后</i>被调用，所以你可以查看这个XML元素的名称、属性以及属性的值来决定适当的返回值类型。 </p>
+
+<!-- NEED 2in -->
+<p>下面的回调函数查看一个名称为"type"的属性或者XML元素的名字来决定它的子节点的值类型：</p>
+<pre>    mxml_type_t
+    type_cb(mxml_node_t *node)
+    {
+      const char *type;
+
+     /*
+      * 你可以查看属性和/或使用XML元素名，所在层次，等等
+      */
+
+      type = mxmlElementGetAttr(node, "type");
+      if (type == NULL)
+	type = node-&gt;value.element.name;
+
+      if (!strcmp(type, "integer"))
+	return (MXML_INTEGER);
+      else if (!strcmp(type, "opaque"))
+	return (MXML_OPAQUE);
+      else if (!strcmp(type, "real"))
+	return (MXML_REAL);
+      else
+	return (MXML_TEXT);
+    }
+</pre>
+<p>要使用这个回调函数，只需要在你调用任何加载函数时简单的使用它的名字：</p>
+<pre>    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "r");
+    tree = mxmlLoadFile(NULL, fp, <b>type_cb</b>);
+    fclose(fp);
+</pre>
+<h2><a name="SAVE_CALLBACKS">保存回调</a></h2>
+<p><a href="#LOAD_XML">第二章</a> 也介绍了<a href="#mxmlSaveFile">
+<tt>mxmlSaveFile()</tt></a>, <a href="#mxmlSaveString"><tt>
+mxmlSaveString()</tt></a>, 和<a href="#mxmlSaveAllocString"><tt>
+mxmlSaveAllocString()</tt></a> 函数。这些函数的最后一个参数是一个回调函数被用来自动在一个XML文档中添加空白字符。</p>
+<p>你的回调函数将在每个XML元素被调用四次，传入参数为一个到这个节点的指针和一个"where"的值：<tt>
+MXML_WS_BEFORE_OPEN</tt>, <tt>MXML_WS_AFTER_OPEN</tt>, <tt>
+MXML_WS_BEFORE_CLOSE</tt>, 或者<tt>MXML_WS_AFTER_CLOSE</tt>。如果不需要插入空白字符这个回调函数将返回 <tt>NULL</tt>，否则返回字符串（空白、跳格、回车和换行）将被插入。</p>
+<p>下面的空白回调可以被用来为XHTML输出添加空白字符，来使它在一般的文本编辑器中更加易读：</p>
+<pre>    const char *
+    whitespace_cb(mxml_node_t *node,
+                  int where)
+    {
+      const char *name;
+
+     /*
+      * 我们可以在任何XML元素之前或之后有条件的添加换行。这些是一些常见的HTML元素。
+      */
+
+      name = node-&gt;value.element.name;
+
+      if (!strcmp(name, "html") ||
+          !strcmp(name, "head") ||
+          !strcmp(name, "body") ||
+	  !strcmp(name, "pre") ||
+          !strcmp(name, "p") ||
+	  !strcmp(name, "h1") ||
+          !strcmp(name, "h2") ||
+          !strcmp(name, "h3") ||
+	  !strcmp(name, "h4") ||
+          !strcmp(name, "h5") ||
+          !strcmp(name, "h6"))
+      {
+       /*
+	* 在打开之前和关闭之后时换行。
+	*/
+
+	if (where == MXML_WS_BEFORE_OPEN ||
+            where == MXML_WS_AFTER_CLOSE)
+	  return ("\n");
+      }
+      else if (!strcmp(name, "dl") ||
+               !strcmp(name, "ol") ||
+               !strcmp(name, "ul"))
+      {
+       /*
+	* 在列表元素前后都添加换行。
+	*/
+
+	return ("\n");
+      }
+      else if (!strcmp(name, "dd") ||
+               !strcmp(name, "dt") ||
+               !strcmp(name, "li"))
+      {
+       /*
+	* 添加一个"跳格"在&lt;li&gt;, * &lt;dd&gt;,
+        * 和 &lt;dt&gt;之前, 以及一个换行在他们后面...
+	*/
+
+	if (where == MXML_WS_BEFORE_OPEN)
+	  return ("\t");
+	else if (where == MXML_WS_AFTER_CLOSE)
+	  return ("\n");
+      }
+
+     /*
+      * 如果不需要添加空白字符则返回NULL。
+      */
+
+      return (NULL);
+    }
+</pre>
+<p>要使用这些回调函数，只需要在你调用任何保存函数时简单使用它的名字：</p>
+<pre>    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "w");
+    mxmlSaveFile(tree, fp, <b>whitespace_cb</b>);
+    fclose(fp);
+</pre>
+
+<!-- NEED 10 -->
+<h2><a name="4_3">用户定义数据类型</a></h2>
+<p>Mini-XML 支持通过全局的载入和保存回调函数使用自定义数据类型。 每次只能有一组回调函数被同时激活，然而你的回调函数可以为支持多种所需要的自定义数据类型来保存更多的信息。 节点类型 <tt>MXML_CUSTOM</tt>
+ 表示一个自定义数据内容的节点。</p>
+<p>加载回调接收一个到当前数据节点的指针和一个不透明字符串数据从XML源中并且将字符集转换为UTF-8编码。例如：如果我们想要支持定制的日期/时间类型并且编码为"yyyy-mm-ddThh:mm:ssZ" (ISO 格式), 那么加载回调函数如下所示：</p>
+<pre>    typedef struct
+    {
+      unsigned      year,    /* Year */
+                    month,   /* Month */
+                    day,     /* Day */
+                    hour,    /* Hour */
+                    minute,  /* Minute */
+                    second;  /* Second */
+      time_t        unix;    /* UNIX time */
+    } iso_date_time_t;
+
+    int
+    load_custom(mxml_node_t *node,
+                const char *data)
+    {
+      iso_date_time_t *dt;
+      struct tm tmdata;
+
+     /*
+      * 分配数据结构...
+      */
+
+      dt = calloc(1, sizeof(iso_date_time_t));
+
+     /*
+      * 尝试从数据字符串中读取6个无符号整数..
+      */
+
+      if (sscanf(data, "%u-%u-%uT%u:%u:%uZ",
+                 &amp;(dt-&gt;year), &amp;(dt-&gt;month),
+                 &amp;(dt-&gt;day), &amp;(dt-&gt;hour),
+                 &amp;(dt-&gt;minute),
+                 &amp;(dt-&gt;second)) != 6)
+      {
+       /*
+        * 如果不能读取到数字，释放分配的结构并返回一个错误...
+        */
+
+        free(dt);
+
+        return (-1);
+      }
+
+     /*
+      * 数据范围检查...
+      */
+
+      if (dt-&gt;month &lt;1 || dt-&gt;month &gt; 12 ||
+          dt-&gt;day  &lt;1 || dt-&gt;day &gt; 31 ||
+          dt-&gt;hour  &lt;0 || dt-&gt;hour &gt; 23 ||
+          dt-&gt;minute  &lt;0 || dt-&gt;minute &gt; 59 ||
+          dt-&gt;second  &lt;0 || dt-&gt;second &gt; 59)
+      {
+       /*
+        * 如果日期信息超出范围...
+        */
+
+        free(dt);
+
+        return (-1);
+      }
+
+     /*
+      * 转换ISO时间到以秒为单位的UNIX时间...
+      */
+
+      tmdata.tm_year = dt-&gt;year - 1900;
+      tmdata.tm_mon  = dt-&gt;month - 1;
+      tmdata.tm_day  = dt-&gt;day;
+      tmdata.tm_hour = dt-&gt;hour;
+      tmdata.tm_min  = dt-&gt;minute;
+      tmdata.tm_sec  = dt-&gt;second;
+
+      dt-&gt;unix = gmtime(&amp;tmdata);
+
+     /*
+      * 设置自定义节点数据指针和销毁函数指针...
+      */
+
+      node-&gt;value.custom.data    = dt;
+      node-&gt;value.custom.destroy = free;
+
+     /*
+      * 返回没有错误...
+      */
+
+      return (0);
+    }
+</pre>
+<p>这个函数成功时返回0，当不能正确解码自定义数据或者数据内容错误时返回-1。自定义数据节点包含一个<tt>void</tt> 指针用来保存这个节点已经分配的自定义数据，还有一个指向销毁函数的指针用于当节点被删除时释放自定义数据。</p>
+<p>保存回调接收一个节点指针并且返回一个包含自定义数据值的已经分配的字符串。下面的保存回调函数可以被用来保存我们的ISO日期/时间类型：</p>
+<pre>    char *
+    save_custom(mxml_node_t *node)
+    {
+      char data[255];
+      iso_date_time_t *dt;
+
+
+      dt = (iso_date_time_t *)node-&gt;custom.data;
+
+      snprintf(data, sizeof(data),
+               "%04u-%02u-%02uT%02u:%02u:%02uZ",
+               dt-&gt;year, dt-&gt;month, dt-&gt;day,
+               dt-&gt;hour, dt-&gt;minute, dt-&gt;second);
+
+      return (strdup(data));
+    }
+</pre>
+<p>你可以注册这些回调函数使用<a href="#mxmlSetCustomHandlers">
+<tt>mxmlSetCustomHandlers()</tt></a> 函数：</p>
+<pre>    mxmlSetCustomHandlers(<b>load_custom</b>,<b>save_custom</b>);
+</pre>
+
+<!-- NEED 20 -->
+<h2><a name="4_4">改变节点的值</a></h2>
+<p>到现在为止所有的例子集中描述了如何创建和加载新的XML数据节点。然而，许多的应用程序在它们的工作中需要操纵或者改变节点，所以Mini-XML提供了一些函数来安全的改变节点的值并且不会发生内存泄漏。</p>
+<p>已有的节点可以被改变通过使用函数<a href="#mxmlSetElement"><tt>
+mxmlSetElement()</tt></a>, <a href="#mxmlSetInteger"><tt>
+mxmlSetInteger()</tt></a>, <a href="#mxmlSetOpaque"><tt>mxmlSetOpaque()</tt>
+</a>, <a href="#mxmlSetReal"><tt>mxmlSetReal()</tt></a>, <a href="#mxmlSetText">
+<tt>mxmlSetText()</tt></a>, 和 <a href="#mxmlSetTextf"><tt>
+mxmlSetTextf()</tt></a>。例如：使用下面的函数调用可以改变一个文本节点到包含字符串"new"并且具有前导的空白字符：</p>
+<pre>    mxml_node_t *node;
+
+    mxmlSetText(node, 1, "new");
+</pre>
+<h2><a name="4_5">格式化的文本</a></h2>
+<p><a href="#mxmlNewTextf"><tt>mxmlNewTextf()</tt></a>和<a href="#mxmlSetTextf">
+<tt>mxmlSetTextf()</tt></a> 函数分别是创建和改变文本节点，使用<tt>printf</tt>-风格的格式字符串和参数。例如：使用下面的函数调用来创建一个新的文本节点包含一个构造的文件名：
+</p>
+<pre>    mxml_node_t *node;
+
+    node = mxmlNewTextf(node, 1, "%s/%s",
+                        path, filename);
+</pre>
+<h2><a name="4_6">索引</a></h2>
+<p>Mini-XML 提供了一些函数来管理节点的索引。当前的实现提供了同样的功能就像 <a href="#mxmlFindElement">
+<tt>mxmlFindElement()</tt></a>一样。使用索引优势是可以使搜索和枚举XML元素显著加快。唯一不利的是每个索引都是一个关于这个XML文档的静态快照，所以索引不适合当相对于它的搜索操作，XML数据更加频繁更新时的情况。上面的创建一个索引近似相当于遍历这个XML文档树。在索引中的节点被按照XML元素名和它的参数值进行排序。</p>
+<p>这些索引被保存在<a href="#mxml_index_t"><tt>mxml_index_t</tt></a>
+ 结构中。用<a href="#mxmlIndexNew"><tt>mxmlIndexNew()</tt></a>函数可以创建一个新的索引：</p>
+<pre>    mxml_node_t *tree;
+    mxml_index_t *ind;
+
+    ind = mxmlIndexNew(tree, "element",
+                       "attribute");
+</pre>
+<p>第一个参数是需要进行索引的XML节点树。通常是一个指向<tt>?xml</tt>元素的节点。</p>
+<p>第二个参数包含了需要进行索引的XML元素；使用<tt>NULL</tt>值将按照字母顺序索引所有的XML元素节点。</p>
+<p>第三个参数包含了需要进行索引的属性；使用<tt>NULL</tt>将使只有XML元素名字被索引。</p>
+<p>当索引被建立后，函数<a href="#mxmlIndexEnum"><tt>
+mxmlIndexEnum()</tt></a>, <a href="#mxmlIndexFind"><tt>mxmlIndexFind()</tt>
+</a>, and <a href="#mxmlIndexReset"><tt>mxmlIndexReset()</tt></a>可以被用来访问索引中的节点。
+函数<a href="#mxmlIndexReset">
+<tt>mxmlIndexReset()</tt></a>被用来重置在索引中的"当前"节点指针，允许你在同一个索引中进行新的搜索和枚举遍历。典型应用是你将在你调用函数<a href="#mxmlIndexEnum"><tt>mxmlIndexEnum()</tt></a> 和<a href="#mxmlIndexFind">
+<tt>mxmlIndexFind()</tt></a>之前调用这个函数。</p>
+<p>函数<a href="#mxmlIndexEnum"><tt>mxmlIndexEnum()</tt></a> 用来枚举在索引中的每一个节点，可以在一个循环中使用，如下所示：</p>
+<pre>    mxml_node_t *node;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexEnum(ind)) != NULL)
+    {
+      // do something with node
+    }
+</pre>
+<p>函数<a href="#mxmlIndexFind"><tt>mxmlIndexFind()</tt></a> 定位下一次在索引中出现的XML元素名和属性值。它可以被用于发现在索引中的所有匹配的XML元素，如下所示：</p>
+<pre>    mxml_node_t *node;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexFind(ind, "element",
+                                 "attr-value"))
+                != NULL)
+    {
+      // do something with node
+    }
+</pre>
+<p>第二和第三个参数分别表示XML元素名和属性值。使用 <tt>NULL</tt>指针用来返回索引中所有的XML元素或者属性。如果XML元素名和属性值同时为<tt>NULL</tt>则相当于调用函数<tt>
+mxmlIndexEnum</tt>。</p>
+<p>当我们使用完这个索引后，使用函数<a href="#mxmlIndexDelete%28%29">
+<tt>mxmlIndexDelete()</tt></a> 来删除它:</p>
+<pre>    mxmlIndexDelete(ind);
+</pre>
+<h2><a name="4_7">SAX (流方式解析) 加载文档</a></h2>
+<p>Mini-XML支持一个关于简单XML API (SAX)的实现，以允许你通过节点流的方式加载和处理XML文档。另外允许你处理任何大小的XML文件，Mini-XML的实现也允许你为下一步的处理而只在内存中保留XML文档的一部分。</p>
+<p>The <a href="#mxmlSAXLoad"><tt>mxmlSAXLoadFd</tt></a>, <a href="#mxmlSAXLoadFile">
+<tt>mxmlSAXLoadFile</tt></a>, 和<a href="#mxmlSAXLoadString"><tt>
+mxmlSAXLoadString</tt></a> 函数提供了SAX加载的API。每个函数工作起来就象 <tt>mxmlLoad</tt> 函数一样，但是使用一个回调函数来处理它读到的每一个节点。</p>
+<p>回调函数接收到一个节点，一个事件代码和一个你提供的用户数据指针：</p>
+<pre>    void
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
+           void *data)
+    {
+      ... do something ...
+    }
+</pre>
+<p>事件(event)将是下面的其中一个：</p>
+<ul>
+<li><tt>MXML_SAX_CDATA</tt> - CDATA 正在被读取</li>
+<li><tt>MXML_SAX_COMMENT</tt> - 一个注释正在被读取</li>
+<li><tt>MXML_SAX_DATA</tt> - 数据(custom, integer, opaque, real, or
+ text) 正在被读取</li>
+<li><tt>MXML_SAX_DIRECTIVE</tt> - 一个处理指令正在被读取</li>
+<li><tt>MXML_SAX_ELEMENT_OPEN</tt> - 一个"打开"元素节点正在被读取，如(<tt>
+&lt;element&gt;</tt>)</li>
+<li><tt>MXML_SAX_ELEMENT_CLOSE</tt> - 一个"关闭"元素节点正在被读取，如(<tt>
+&lt;/element&gt;</tt>)</li>
+</ul>
+<p>XML元素将被<em> 释放</em> 在一个"关闭"元素被处理后。所有其他的节点在他们被处理后都被释放。SAX回调函数可以<em> 保留</em> 这个节点，通过调用函数<a href="#mxmlRetain"><tt>
+mxmlRetain</tt></a> 。例如：下面的SAX回调函数将保留所有的节点，就像一个普通的内存加载一样：</p>
+<pre>    void
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
+           void *data)
+    {
+      if (event != MXML_SAX_ELEMENT_CLOSE)
+        mxmlRetain(node);
+    }
+</pre>
+<p>更多的典型SAX回调函数将只保留后面需要处理的这个XML文档的一小部分。例如，下面的SAX回调函数将保留一个XHTML文件的标题和头部信息。它总是保留一个XML元素（父节点）就像<tt>&lt;html&gt;</tt>, <tt>
+&lt;head&gt;</tt>, 和 <tt>&lt;body&gt;</tt>,并处理指令节点就像 <tt>
+&lt;?xml ... ?&gt;</tt> 和<tt>&lt;!DOCTYPE ... &gt;</tt>：</p>
+
+<!-- NEED 10 -->
+<pre>    void
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
+           void *data)
+    {
+      if (event == MXML_SAX_ELEMENT_OPEN)
+      {
+       /*
+        * 保留标题和头部
+        */
+
+        char *name = node-&gt;value.element.name;
+
+        if (!strcmp(name, "html") ||
+            !strcmp(name, "head") ||
+            !strcmp(name, "title") ||
+            !strcmp(name, "body") ||
+            !strcmp(name, "h1") ||
+            !strcmp(name, "h2") ||
+            !strcmp(name, "h3") ||
+            !strcmp(name, "h4") ||
+            !strcmp(name, "h5") ||
+            !strcmp(name, "h6"))
+          mxmlRetain(node);
+      }
+      else if (event == MXML_SAX_DIRECTIVE)
+        mxmlRetain(node);
+      else if (event == MXML_SAX_DATA &amp;&amp;
+               node-&gt;parent-&gt;ref_count &gt; 1)
+      {
+       /*
+        * 如果父节点被保留，那么这个数据节点最好是也被保留。
+        */
+
+        mxmlRetain(node);
+      }
+    }
+</pre>
+<p>这个结果框架文档树可以被搜素就像一个使用函数<tt>mxmlLoad</tt> 加载的一样。例如，一个过滤器程序用来从标准输入(stdin)中读取一个XHTML文档，并显示在文档中的标题和标头，如下所示：</p>
+<pre>    mxml_node_t *doc, *title, *body, *heading;
+
+    doc = mxmlSAXLoadFd(NULL, 0,
+                        MXML_TEXT_CALLBACK,
+                        <b>sax_cb</b>, NULL);
+
+    title = mxmlFindElement(doc, doc, "title",
+                            NULL, NULL,
+                            MXML_DESCEND);
+
+    if (title)
+      print_children(title);
+
+    body = mxmlFindElement(doc, doc, "body",
+                           NULL, NULL,
+                           MXML_DESCEND);
+
+    if (body)
+    {
+      for (heading = body-&gt;child;
+           heading;
+           heading = heading-&gt;next)
+        print_children(heading);
+    }
+</pre>
+<hr noshade="noshade">
+<h1 align="right"><a name="MXMLDOC"><img alt="4" src="minixml-cn_files/4.gif" align="right" height="100" hspace="10" width="100"></a>使用mxmldoc 工具</h1>
+<p>这一章描述了如何使用<tt>mxmldoc(1)</tt> 程序自动从c和c++源文件中生成文档。</p>
+<h2><a name="5_1">基础知识</a></h2>
+<p>最初开发是用来生成Mini-XML 和CUPS API的文档，现在<tt>mxmldoc</tt>是一个通用工具实现了扫描C和C++源文件以生成HTML和man手册页文档与一个描述这些源文件中的函数、类型和宏的定义的XML文件。不像一些流行的文档生成工具如Doxygen 或 Javadoc, <tt>mxmldoc</tt>使用"在线"注释并不是注释头文件，允许更加自然的代码文档。</p>
+<p>缺省情况下，<tt>mxmldoc</tt> 生成HTML文档个，例如：下面的命令将扫描所有的在当前目录下的C源代码和头文件并生成一个HTML文档文件叫<var> filename.html</var>:</p>
+<pre>    <kbd>mxmldoc *.h *.c &gt;filename.html ENTER</kbd>
+</pre>
+<p>你也可以指定创建一个包含所有源文件信息的XML文件。例如，下面的命令创建一个XML文件<var> filename.xml</var>并添加到这个HTML文件中：</p>
+<pre>    <kbd>mxmldoc filename.xml *.h *.c &gt;filename.html ENTER</kbd>
+</pre>
+<p><tt>--no-output</tt> 选项关闭标准的HTML输出：</p>
+<pre>    <kbd>mxmldoc --no-output filename.xml *.h *.c ENTER</kbd>
+</pre>
+<p>你可以再次运行<tt>mxmldoc</tt>通过这个XML文件来生成HTML文档：</p>
+<pre>    <kbd>mxmldoc filename.xml &gt;filename.html ENTER</kbd>
+</pre>
+<p><tt>--man filename</tt> 选项来告诉<tt>mxmldoc</tt>创建一个手册页(man page)代替HTML文档，例如：</p>
+<pre>    <kbd>mxmldoc --man filename filename.xml \
+        &gt;filename.man ENTER</kbd>
+
+    <kbd>mxmldoc --man filename *.h *.c \
+        &gt;filename.man ENTER</kbd>
+
+    <kbd>mxmldoc --man filename filename.xml *.h *.c \
+        &gt;filename.man ENTER</kbd>
+</pre>
+<h2><a name="5_2">注释你的代码</a></h2>
+<p>在上面已经提到，<tt>mxmldoc</tt> 查看在线注释来描述你源文件中的函数、类型以及常量。<tt>Mxmldoc</tt>
+ 将为你源文件中"所有"公开的命名生成文档，所有以下划线开始的名称和被使用<a href="#ATDIRECTIVES">@private@</a> 指令注解的名称被认为是“私有”的而不生成文档。</p>
+<p>出现在函数或者类型定义前面的注释被用来生出这个函数或者类型的文档。出现在参数、定义、返回类型或者变量定义被用来生成它们的注释。例如：下列代码片断定义一个包含key/vaue的结构以及一个创建这个结构的新实例的函数：</p>
+<pre>    /* A key/value pair. This is used with the
+       dictionary structure. */
+
+    struct keyval
+    {
+      char *key; /* Key string */
+      char *val; /* Value string */
+    };
+
+    /* Create a new key/value pair. */
+
+    struct keyval * /* New key/value pair */
+    new_keyval(
+        const char *key, /* Key string */
+	const char *val) /* Value string */
+    {
+      ...
+    }
+</pre>
+<p><tt>Mxmldoc</tt> 总是知道并从注释字符串中移除多余的(*)号，所以下面的这个注释字符串：</p>
+<pre>    /*
+     * Compute the value of PI.
+     *
+     * The function connects to an Internet server
+     * that streams audio of mathematical monks
+     * chanting the first 100 digits of PI.
+     */
+</pre>
+<p>将被显示为：</p>
+<pre>    Compute the value of PI.
+
+    The function connects to an Internet server
+    that streams audio of mathematical monks
+    chanting the first 100 digits of PI.
+</pre>
+<p><a name="ATDIRECTIVES">注释</a>中也可以包含<tt>@name ...@</tt> 这样的特殊指令字符串：</p>
+<ul>
+<li><tt>@deprecated@</tt> - 标识一个条目为不支持并阻止它的使用</li>
+<li><tt>@private@</tt> - 标识一个条目为为私有的所以它将不被包含在文档中。</li>
+<li><tt>@since ...@</tt> - 标识一个条目为为从一个特别重要的发布更新。从<tt>@since</tt>到<tt>@</tt>间的文本在文档中将被高亮显示，如：
+ <tt>@since CUPS
+ 1.3@</tt>。</li>
+</ul>
+
+<!-- NEED 10 -->
+<h2><a name="5_3">标题、分段名和简介</a></h2>
+<p><tt>Mxmldoc</tt> 也提供了一些选项来设置生成的文档中的标题、分段名和简介。The <tt>--title text</tt>
+ 选项指定了文档的标题。标题字符串通常放在引号内：</p>
+<pre>    <kbd>mxmldoc filename.xml \
+        --title "My Famous Documentation" \
+        &gt;filename.html ENTER</kbd>
+</pre>
+<p><tt>--section name</tt> 选项指定了文档的分段名。对于HTML文档，这个名字放在一个HTML注释块中，如下所示：</p>
+<pre>    &lt;!-- SECTION: name --&gt;
+</pre>
+<p>对于手册页(man pages), 分段名通常是一个数字("3")，或者是一个数字后面跟着厂商名如("3acme")。这个分段名被使用在手册页(man pages)中的<tt>.TH</tt>指令里：</p>
+<pre>    .TH mylibrary 3acme "My Title" ...
+</pre>
+<p>缺省手册页(man pages)的分段名输出是"3"。对于HTML输出没有缺省的分段名。</p>
+<p>最后，<tt>--intro filename</tt> 选项指定了一个文件来嵌入到在标题和分段名之后和生成文档的前面。对于HTML文档，这个文件必须兼容HTML并且不能使用<tt>DOCTYPE</tt>, <tt>html</tt>, and <tt>body</tt>元素。
+.对于手册页文档，这个文件必须兼容有效的<tt>nroff(1)</tt> 文本.</p>
+<hr noshade="noshade">
+<h1 align="right"><a name="LICENSE"><img alt="A" src="minixml-cn_files/A.gif" align="right" height="100" hspace="10" width="100"></a>Mini-XML 许可信息</h1>
+<p>The Mini-XML library and included programs are provided under the
+ terms of the GNU Library General Public License (LGPL) with the
+ following exceptions:</p>
+<div class="zf" >LGPL 许可协议中文版本参见：<a href="http://zh.wikipedia.org/w/index.php?title=GNU%E9%80%9A%E7%94%A8%E5%85%AC%E5%85%B1%E8%AE%B8%E5%8F%AF%E8%AF%81&variant=zh-hans">GNU通用公共许可证</a> Z.F</div>
+
+<ol>
+<li>Static linking of applications to the Mini-XML library does not
+ constitute a derivative work and does not require the author to provide
+ source code for the application, use the shared Mini-XML libraries, or
+ link their applications against a user-supplied version of Mini-XML.
+<p><i>If you link the application to a modified version of Mini-XML,
+ then the changes to Mini-XML must be provided under the terms of the
+ LGPL in sections 1, 2, and 4.</i></p>
+</li>
+<li>You do not have to provide a copy of the Mini-XML license with
+ programs that are linked to the Mini-XML library, nor do you have to
+ identify the Mini-XML license in your program or documentation as
+ required by section 6 of the LGPL.</li>
+</ol>
+<p align="center"><b>GNU LIBRARY GENERAL PUBLIC LICENSE</b></p>
+<p align="center">Version 2, June 1991
+<br> Copyright (C) 1991 Free Software Foundation, Inc.
+<br> 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<br> Everyone is permitted to copy and distribute verbatim copies of
+ this license document, but changing it is not allowed.
+<br> [This is the first released version of the library GPL. It is
+ numbered 2 because it goes with version 2 of the ordinary GPL.]</p>
+<p><b>Preamble</b></p>
+<p>The licenses for most software are designed to take away your freedom
+ to share and change it. By contrast, the GNU General Public Licenses
+ are intended to guarantee your freedom to share and change free
+ software--to make sure the software is free for all its users.</p>
+<p>This license, the Library General Public License, applies to some
+ specially designated Free Software Foundation software, and to any
+ other libraries whose authors decide to use it. You can use it for your
+ libraries, too.</p>
+<p>When we speak of free software, we are referring to freedom, not
+ price. Our General Public Licenses are designed to make sure that you
+ have the freedom to distribute copies of free software (and charge for
+ this service if you wish), that you receive source code or can get it
+ if you want it, that you can change the software or use pieces of it in
+ new free programs; and that you know you can do these things.</p>
+<p>To protect your rights, we need to make restrictions that forbid
+ anyone to deny you these rights or to ask you to surrender the rights.
+ These restrictions translate to certain responsibilities for you if you
+ distribute copies of the library, or if you modify it.</p>
+<p>For example, if you distribute copies of the library, whether gratis
+ or for a fee, you must give the recipients all the rights that we gave
+ you. You must make sure that they, too, receive or can get the source
+ code. If you link a program with the library, you must provide complete
+ object files to the recipients so that they can relink them with the
+ library, after making changes to the library and recompiling it. And
+ you must show them these terms so they know their rights.</p>
+<p>Our method of protecting your rights has two steps: (1) copyright the
+ library, and (2) offer you this license which gives you legal
+ permission to copy, distribute and/or modify the library.</p>
+<p>Also, for each distributor's protection, we want to make certain that
+ everyone understands that there is no warranty for this free library.
+ If the library is modified by someone else and passed on, we want its
+ recipients to know that what they have is not the original version, so
+ that any problems introduced by others will not reflect on the original
+ authors' reputations.</p>
+<p>Finally, any free program is threatened constantly by software
+ patents. We wish to avoid the danger that companies distributing free
+ software will individually obtain patent licenses, thus in effect
+ transforming the program into proprietary software. To prevent this, we
+ have made it clear that any patent must be licensed for everyone's free
+ use or not licensed at all.</p>
+<p>Most GNU software, including some libraries, is covered by the
+ ordinary GNU General Public License, which was designed for utility
+ programs. This license, the GNU Library General Public License, applies
+ to certain designated libraries. This license is quite different from
+ the ordinary one; be sure to read it in full, and don't assume that
+ anything in it is the same as in the ordinary license.</p>
+<p>The reason we have a separate public license for some libraries is
+ that they blur the distinction we usually make between modifying or
+ adding to a program and simply using it. Linking a program with a
+ library, without changing the library, is in some sense simply using
+ the library, and is analogous to running a utility program or
+ application program. However, in a textual and legal sense, the linked
+ executable is a combined work, a derivative of the original library,
+ and the ordinary General Public License treats it as such.</p>
+<p>Because of this blurred distinction, using the ordinary General
+ Public License for libraries did not effectively promote software
+ sharing, because most developers did not use the libraries. We
+ concluded that weaker conditions might promote sharing better.</p>
+<p>However, unrestricted linking of non-free programs would deprive the
+ users of those programs of all benefit from the free status of the
+ libraries themselves. This Library General Public License is intended
+ to permit developers of non-free programs to use free libraries, while
+ preserving your freedom as a user of such programs to change the free
+ libraries that are incorporated in them. (We have not seen how to
+ achieve this as regards changes in header files, but we have achieved
+ it as regards changes in the actual functions of the Library.) The hope
+ is that this will lead to faster development of free libraries.</p>
+<p>The precise terms and conditions for copying, distribution and
+ modification follow. Pay close attention to the difference between a
+ "work based on the libary" and a "work that uses the library". The
+ former contains code derived from the library, while the latter only
+ works together with the library.</p>
+<p>Note that it is possible for a library to be covered by the ordinary
+ General Public License rather than by this special one.</p>
+<p align="center"><b>TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND
+ MODIFICATION</b></p>
+<p><strong>0.</strong> This License Agreement applies to any software
+ library which contains a notice placed by the copyright holder or other
+ authorized party saying it may be distributed under the terms of this
+ Library General Public License (also called "this License"). Each
+ licensee is addressed as "you".</p>
+<p>A "library" means a collection of software functions and/or data
+ prepared so as to be conveniently linked with application programs
+ (which use some of those functions and data) to form executables.</p>
+<p>The "Library", below, refers to any such software library or work
+ which has been distributed under these terms. A "work based on the
+ Library" means either the Library or any derivative work under
+ copyright law: that is to say, a work containing the Library or a
+ portion of it, either verbatim or with modifications and/or translated
+ straightforwardly into another language. (Hereinafter, translation is
+ included without limitation in the term "modification".)</p>
+<p>"Source code" for a work means the preferred form of the work for
+ making modifications to it. For a library, complete source code means
+ all the source code for all modules it contains, plus any associated
+ interface definition files, plus the scripts used to control
+ compilation and installation of the library.</p>
+<p>Activities other than copying, distribution and modification are not
+ covered by this License; they are outside its scope. The act of running
+ a program using the Library is not restricted, and output from such a
+ program is covered only if its contents constitute a work based on the
+ Library (independent of the use of the Library in a tool for writing
+ it). Whether that is true depends on what the Library does and what the
+ program that uses the Library does.</p>
+<p><strong>1.</strong> You may copy and distribute verbatim copies of
+ the Library's complete source code as you receive it, in any medium,
+ provided that you conspicuously and appropriately publish on each copy
+ an appropriate copyright notice and disclaimer of warranty; keep intact
+ all the notices that refer to this License and to the absence of any
+ warranty; and distribute a copy of this License along with the Library.</p>
+<p>You may charge a fee for the physical act of transferring a copy, and
+ you may at your option offer warranty protection in exchange for a fee.</p>
+<p><strong>2.</strong> You may modify your copy or copies of the Library
+ or any portion of it, thus forming a work based on the Library, and
+ copy and distribute such modifications or work under the terms of
+ Section 1 above, provided that you also meet all of these conditions:</p>
+<ul>
+<p><strong>a)</strong> The modified work must itself be a software
+ library.</p>
+<p><strong>b)</strong> You must cause the files modified to carry
+ prominent notices stating that you changed the files and the date of
+ any change.</p>
+<p><strong>c)</strong> You must cause the whole of the work to be
+ licensed at no charge to all third parties under the terms of this
+ License.</p>
+<p><strong>d)</strong> If a facility in the modified Library refers to a
+ function or a table of data to be supplied by an application program
+ that uses the facility, other than as an argument passed when the
+ facility is invoked, then you must make a good faith effort to ensure
+ that, in the event an application does not supply such function or
+ table, the facility still operates, and performs whatever part of its
+ purpose remains meaningful.</p>
+<p>(For example, a function in a library to compute square roots has a
+ purpose that is entirely well-defined independent of the application.
+ Therefore, Subsection 2d requires that any application-supplied
+ function or table used by this function must be optional: if the
+ application does not supply it, the square root function must still
+ compute square roots.)</p>
+</ul>
+<p>These requirements apply to the modified work as a whole. If
+ identifiable sections of that work are not derived from the Library,
+ and can be reasonably considered independent and separate works in
+ themselves, then this License, and its terms, do not apply to those
+ sections when you distribute them as separate works. But when you
+ distribute the same sections as part of a whole which is a work based
+ on the Library, the distribution of the whole must be on the terms of
+ this License, whose permissions for other licensees extend to the
+ entire whole, and thus to each and every part regardless of who wrote
+ it.</p>
+<p>Thus, it is not the intent of this section to claim rights or contest
+ your rights to work written entirely by you; rather, the intent is to
+ exercise the right to control the distribution of derivative or
+ collective works based on the Library.</p>
+<p>In addition, mere aggregation of another work not based on the
+ Library with the Library (or with a work based on the Library) on a
+ volume of a storage or distribution medium does not bring the other
+ work under the scope of this License.</p>
+<p><strong>3.</strong> You may opt to apply the terms of the ordinary
+ GNU General Public License instead of this License to a given copy of
+ the Library. To do this, you must alter all the notices that refer to
+ this License, so that they refer to the ordinary GNU General Public
+ License, version 2, instead of to this License. (If a newer version
+ than version 2 of the ordinary GNU General Public License has appeared,
+ then you can specify that version instead if you wish.) Do not make any
+ other change in these notices.</p>
+<p>Once this change is made in a given copy, it is irreversible for that
+ copy, so the ordinary GNU General Public License applies to all
+ subsequent copies and derivative works made from that copy.</p>
+<p>This option is useful when you wish to copy part of the code of the
+ Library into a program that is not a library.</p>
+<p><strong>4.</strong> You may copy and distribute the Library (or a
+ portion or derivative of it, under Section 2) in object code or
+ executable form under the terms of Sections 1 and 2 above provided that
+ you accompany it with the complete corresponding machine-readable
+ source code, which must be distributed under the terms of Sections 1
+ and 2 above on a medium customarily used for software interchange.</p>
+<p>If distribution of object code is made by offering access to copy
+ from a designated place, then offering equivalent access to copy the
+ source code from the same place satisfies the requirement to distribute
+ the source code, even though third parties are not compelled to copy
+ the source along with the object code.</p>
+<p><strong>5.</strong> A program that contains no derivative of any
+ portion of the Library, but is designed to work with the Library by
+ being compiled or linked with it, is called a "work that uses the
+ Library". Such a work, in isolation, is not a derivative work of the
+ Library, and therefore falls outside the scope of this License.</p>
+<p>However, linking a "work that uses the Library" with the Library
+ creates an executable that is a derivative of the Library (because it
+ contains portions of the Library), rather than a "work that uses the
+ library". The executable is therefore covered by this License. Section
+ 6 states terms for distribution of such executables.</p>
+<p>When a "work that uses the Library" uses material from a header file
+ that is part of the Library, the object code for the work may be a
+ derivative work of the Library even though the source code is not.
+ Whether this is true is especially significant if the work can be
+ linked without the Library, or if the work is itself a library. The
+ threshold for this to be true is not precisely defined by law.</p>
+<p>If such an object file uses only numerical parameters, data structure
+ layouts and accessors, and small macros and small inline functions (ten
+ lines or less in length), then the use of the object file is
+ unrestricted, regardless of whether it is legally a derivative work.
+ (Executables containing this object code plus portions of the Library
+ will still fall under Section 6.)</p>
+<p>Otherwise, if the work is a derivative of the Library, you may
+ distribute the object code for the work under the terms of Section 6.
+ Any executables containing that work also fall under Section 6, whether
+ or not they are linked directly with the Library itself.</p>
+<p><strong>6.</strong> As an exception to the Sections above, you may
+ also compile or link a "work that uses the Library" with the Library to
+ produce a work containing portions of the Library, and distribute that
+ work under terms of your choice, provided that the terms permit
+ modification of the work for the customer's own use and reverse
+ engineering for debugging such modifications.</p>
+<p>You must give prominent notice with each copy of the work that the
+ Library is used in it and that the Library and its use are covered by
+ this License. You must supply a copy of this License. If the work
+ during execution displays copyright notices, you must include the
+ copyright notice for the Library among them, as well as a reference
+ directing the user to the copy of this License. Also, you must do one
+ of these things:</p>
+<ul><strong> a)</strong> Accompany the work with the complete
+ corresponding machine-readable source code for the Library including
+ whatever changes were used in the work (which must be distributed under
+ Sections 1 and 2 above); and, if the work is an executable linked with
+ the Library, with the complete machine-readable "work that uses the
+ Library", as object code and/or source code, so that the user can
+ modify the Library and then relink to produce a modified executable
+ containing the modified Library. (It is understood that the user who
+ changes the contents of definitions files in the Library will not
+ necessarily be able to recompile the application to use the modified
+ definitions.)
+<p><strong>b)</strong> Accompany the work with a written offer, valid
+ for at least three years, to give the same user the materials specified
+ in Subsection 6a, above, for a charge no more than the cost of
+ performing this distribution.</p>
+<p><strong>c)</strong> If distribution of the work is made by offering
+ access to copy from a designated place, offer equivalent access to copy
+ the above specified materials from the same place.</p>
+<p><strong>d)</strong> Verify that the user has already received a copy
+ of these materials or that you have already sent this user a copy.</p>
+</ul>
+<p>For an executable, the required form of the "work that uses the
+ Library" must include any data and utility programs needed for
+ reproducing the executable from it. However, as a special exception,
+ the source code distributed need not include anything that is normally
+ distributed (in either source or binary form) with the major components
+ (compiler, kernel, and so on) of the operating system on which the
+ executable runs, unless that component itself accompanies the
+ executable.</p>
+<p>It may happen that this requirement contradicts the license
+ restrictions of other proprietary libraries that do not normally
+ accompany the operating system. Such a contradiction means you cannot
+ use both them and the Library together in an executable that you
+ distribute.</p>
+<p><strong>7.</strong> You may place library facilities that are a work
+ based on the Library side-by-side in a single library together with
+ other library facilities not covered by this License, and distribute
+ such a combined library, provided that the separate distribution of the
+ work based on the Library and of the other library facilities is
+ otherwise permitted, and provided that you do these two things:</p>
+<ul><strong> a)</strong> Accompany the combined library with a copy of
+ the same work based on the Library, uncombined with any other library
+ facilities. This must be distributed under the terms of the Sections
+ above.
+<p><strong>b)</strong> Give prominent notice with the combined library
+ of the fact that part of it is a work based on the Library, and
+ explaining where to find the accompanying uncombined form of the same
+ work.</p>
+</ul>
+<p><strong>8.</strong> You may not copy, modify, sublicense, link with,
+ or distribute the Library except as expressly provided under this
+ License. Any attempt otherwise to copy, modify, sublicense, link with,
+ or distribute the Library is void, and will automatically terminate
+ your rights under this License. However, parties who have received
+ copies, or rights, from you under this License will not have their
+ licenses terminated so long as such parties remain in full compliance.</p>
+<p><strong>9.</strong> You are not required to accept this License,
+ since you have not signed it. However, nothing else grants you
+ permission to modify or distribute the Library or its derivative works.
+ These actions are prohibited by law if you do not accept this License.
+ Therefore, by modifying or distributing the Library (or any work based
+ on the Library), you indicate your acceptance of this License to do so,
+ and all its terms and conditions for copying, distributing or modifying
+ the Library or works based on it.</p>
+<p><strong>10.</strong> Each time you redistribute the Library (or any
+ work based on the Library), the recipient automatically receives a
+ license from the original licensor to copy, distribute, link with or
+ modify the Library subject to these terms and conditions. You may not
+ impose any further restrictions on the recipients' exercise of the
+ rights granted herein. You are not responsible for enforcing compliance
+ by third parties to this License.</p>
+<p><strong>11.</strong> If, as a consequence of a court judgment or
+ allegation of patent infringement or for any other reason (not limited
+ to patent issues), conditions are imposed on you (whether by court
+ order, agreement or otherwise) that contradict the conditions of this
+ License, they do not excuse you from the conditions of this License. If
+ you cannot distribute so as to satisfy simultaneously your obligations
+ under this License and any other pertinent obligations, then as a
+ consequence you may not distribute the Library at all. For example, if
+ a patent license would not permit royalty-free redistribution of the
+ Library by all those who receive copies directly or indirectly through
+ you, then the only way you could satisfy both it and this License would
+ be to refrain entirely from distribution of the Library.</p>
+<p>If any portion of this section is held invalid or unenforceable under
+ any particular circumstance, the balance of the section is intended to
+ apply, and the section as a whole is intended to apply in other
+ circumstances.</p>
+<p>It is not the purpose of this section to induce you to infringe any
+ patents or other property right claims or to contest validity of any
+ such claims; this section has the sole purpose of protecting the
+ integrity of the free software distribution system which is implemented
+ by public license practices. Many people have made generous
+ contributions to the wide range of software distributed through that
+ system in reliance on consistent application of that system; it is up
+ to the author/donor to decide if he or she is willing to distribute
+ software through any other system and a licensee cannot impose that
+ choice.</p>
+<p>This section is intended to make thoroughly clear what is believed to
+ be a consequence of the rest of this License.</p>
+<p><strong>12.</strong> If the distribution and/or use of the Library is
+ restricted in certain countries either by patents or by copyrighted
+ interfaces, the original copyright holder who places the Library under
+ this License may add an explicit geographical distribution limitation
+ excluding those countries, so that distribution is permitted only in or
+ among countries not thus excluded. In such case, this License
+ incorporates the limitation as if written in the body of this License.</p>
+<p><strong>13.</strong> The Free Software Foundation may publish revised
+ and/or new versions of the Library General Public License from time to
+ time. Such new versions will be similar in spirit to the present
+ version, but may differ in detail to address new problems or concerns.</p>
+<p>Each version is given a distinguishing version number. If the Library
+ specifies a version number of this License which applies to it and "any
+ later version", you have the option of following the terms and
+ conditions either of that version or of any later version published by
+ the Free Software Foundation. If the Library does not specify a license
+ version number, you may choose any version ever published by the Free
+ Software Foundation.</p>
+<p><strong>14.</strong> If you wish to incorporate parts of the Library
+ into other free programs whose distribution conditions are incompatible
+ with these, write to the author to ask for permission. For software
+ which is copyrighted by the Free Software Foundation, write to the Free
+ Software Foundation; we sometimes make exceptions for this. Our
+ decision will be guided by the two goals of preserving the free status
+ of all derivatives of our free software and of promoting the sharing
+ and reuse of software generally.</p>
+<p align="center"><b>NO WARRANTY</b></p>
+<p><strong>15.</strong> BECAUSE THE LIBRARY IS LICENSED FREE OF CHARGE,
+ THERE IS NO WARRANTY FOR THE LIBRARY, TO THE EXTENT PERMITTED BY
+ APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+ HOLDERS AND/OR OTHER PARTIES PROVIDE THE LIBRARY "AS IS" WITHOUT
+ WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
+ OF THE LIBRARY IS WITH YOU. SHOULD THE LIBRARY PROVE DEFECTIVE, YOU
+ ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.</p>
+<p><strong>16.</strong> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR
+ AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO
+ MAY MODIFY AND/OR REDISTRIBUTE THE LIBRARY AS PERMITTED ABOVE, BE
+ LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL
+ OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+ LIBRARY (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+ RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+ FAILURE OF THE LIBRARY TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+ DAMAGES.</p>
+<p align="center"><b>END OF TERMS AND CONDITIONS</b></p>
+<p><b>How to Apply These Terms to Your New Libraries</b></p>
+<p>If you develop a new library, and you want it to be of the greatest
+ possible use to the public, we recommend making it free software that
+ everyone can redistribute and change. You can do so by permitting
+ redistribution under these terms (or, alternatively, under the terms of
+ the ordinary General Public License).</p>
+<p>To apply these terms, attach the following notices to the library. It
+ is safest to attach them to the start of each source file to most
+ effectively convey the exclusion of warranty; and each file should have
+ at least the "copyright" line and a pointer to where the full notice is
+ found.</p>
+<ul>
+<p><var>one line to give the library's name and an idea of what it does.</var>
+<br> Copyright (C)<var> year</var><var> name of author</var></p>
+<p>This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation; either version 2.1 of the
+ License, or (at your option) any later version.</p>
+<p>This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
+ General Public License for more details.</p>
+<p>You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA</p>
+</ul>
+<p>Also add information on how to contact you by electronic and paper
+ mail.</p>
+<p>You should also get your employer (if you work as a programmer) or
+ your school, if any, to sign a "copyright disclaimer" for the library,
+ if necessary. Here is a sample; alter the names:</p>
+<ul>
+<p>Yoyodyne, Inc., hereby disclaims all copyright interest in the
+ library `Frob' (a library for tweaking knobs) written by James Random
+ Hacker.</p>
+<p><var>signature of Ty Coon</var>, 1 April 1990 Ty Coon, President of
+ Vice</p>
+</ul>
+<p>That's all there is to it!</p>
+<hr noshade="noshade">
+<h1 align="right"><a name="RELNOTES"><img alt="B" src="minixml-cn_files/B.gif" align="right" height="100" hspace="10" width="100"></a>发行说明</h1>
+<h2><a name="7_1">Changes in Mini-XML 2.5</a></h2>
+<ul>
+<li>The mxmldoc program now makes greater use of CSS and supports a
+ --css option to embed an alternate stylesheet.</li>
+<li>The mxmldoc program now supports --header and --footer options to
+ insert documentation content before and after the generated content.</li>
+<li>The mxmldoc program now supports a --framed option to generate
+ framed HTML output.</li>
+<li>The mxmldoc program now creates a table of contents including any
+ headings in the --intro file when generating HTML output.</li>
+<li>The man pages and man page output from mxmldoc did not use "\-" for
+ dashes (STR #68)</li>
+<li>The debug version of the Mini-XML DLL could not be built (STR #65)</li>
+<li>Processing instructions and directives did not work when not at the
+ top level of a document (STR #67)</li>
+<li>Spaces around the "=" in attributes were not supported (STR #67)</li>
+</ul>
+<h2><a name="7_2">Changes in Mini-XML 2.4</a></h2>
+<ul>
+<li>Fixed shared library build problems on HP-UX and Mac OS X.</li>
+<li>The mxmldoc program did not output argument descriptions for
+ functions properly.</li>
+<li>All global settings (custom, error, and entity callbacks and the
+ wrap margin) are now managed separately for each thread.</li>
+<li>Added mxmlElementDeleteAttr() function (STR #59)</li>
+<li>mxmlElementSetAttrf() did not work (STR #57)</li>
+<li>mxmlLoad*() incorrectly treated declarations as parent elements (STR
+ #56)</li>
+<li>mxmlLoad*() incorrectly allowed attributes without values (STR #47)</li>
+<li>Fixed Visual C++ build problems (STR #49)</li>
+<li>mxmlLoad*() did not return NULL when an element contained an error
+ (STR #46)</li>
+<li>Added support for the apos character entity (STR #54)</li>
+<li>Fixed whitespace detection with Unicode characters (STR #48)</li>
+<li>mxmlWalkNext() and mxmlWalkPrev() did not work correctly when called
+ with a node with no children as the top node (STR #53)</li>
+</ul>
+<h2><a name="7_3">Changes in Mini-XML 2.3</a></h2>
+<ul>
+<li>Added two exceptions to the LGPL to support static linking of
+ applications against Mini-XML</li>
+<li>The mxmldoc utility can now generate man pages, too.</li>
+<li>Added a mxmlNewXML() function</li>
+<li>Added a mxmlElementSetAttrf() function (STR #43)</li>
+<li>Added a snprintf() emulation function for the test program (STR #32)</li>
+<li>Added the _CRT_SECURE_NO_DEPRECATE definition when building on VC++
+ 2005 (STR #36)</li>
+<li>mxmlLoad*() did not detect missing &gt; characters in elements (STR
+ #41)</li>
+<li>mxmlLoad*() did not detect missing close tags at the end of an XML
+ document (STR #45)</li>
+<li>Added user_data and ref_count members to mxml_node_t structure</li>
+<li>Added mxmlReleaseNode() and mxmlRetainNode() APIs for
+ reference-counted nodes</li>
+<li>Added mxmlSetWrapMargin() to control the wrapping of XML output</li>
+<li>Added conditional check for EINTR error code for certain Windows
+ compilers that do not define it (STR #33)</li>
+<li>The mxmldoc program now generates correct HTML 4.0 output -
+ previously it generated invalid XHTML</li>
+<li>The mxmldoc program now supports "@deprecated@, "@private@", and
+ "@since version@" comments</li>
+<li>Fixed function and enumeration type bugs in mxmldoc</li>
+<li>Fixed the XML schema for mxmldoc</li>
+<li>The mxmldoc program now supports --intro, --section, and --title
+ options</li>
+<li>The mxmlLoad*() functions could leak a node on an error (STR #27)</li>
+<li>The mxml_vsnprintf() function could get in an infinite loop on a
+ buffer overflow (STR #25)</li>
+<li>Added new mxmlNewCDATA() and mxmlSetCDATA() functions to create and
+ set CDATA nodes, which are really just special element nodes</li>
+<li>Added new MXML_IGNORE type and MXML_IGNORE_CB callback to ignore
+ non-element nodes, e.g. whitespace</li>
+<li>mxmlLoad*() did not treat custom data as opaque, so whitespace
+ characters would be lost</li>
+</ul>
+<h2><a name="7_4">Changes in Mini-XML 2.2.2</a></h2>
+<ul>
+<li>mxmlLoad*() did not treat custom data as opaque, so whitespace
+ characters would be lost.</li>
+</ul>
+<h2><a name="7_5">Changes in Mini-XML 2.2.1</a></h2>
+<ul>
+<li>mxmlLoadFd(), mxmlLoadFile(), and mxmlLoadString() now correctly
+ return NULL on error (STR #21)</li>
+<li>mxmlNewInteger(), mxmlNewOpaque(), mxmlNewReal(), mxmlNewText(), and
+ mxmlNewTextf() incorrectly required a parent node (STR #22)</li>
+<li>Fixed an XML output bug in mxmldoc.</li>
+<li>The "make install" target now uses the install command to set the
+ proper permissions on UNIX/Linux/OSX.</li>
+<li>Fixed a MingW/Cygwin compilation problem (STR #18)</li>
+</ul>
+<h2><a name="7_6">Changes in Mini-XML 2.2</a></h2>
+<ul>
+<li>Added shared library support (STR #17)</li>
+<li>mxmlLoad*() now returns an error when an XML stream contains illegal
+ control characters (STR #10)</li>
+<li>mxmlLoad*() now returns an error when an element contains two
+ attributes with the same name in conformance with the XML spec (STR
+ #16)</li>
+<li>Added support for CDATA (STR #14, STR #15)</li>
+<li>Updated comment and processing instruction handling - no entity
+ support per XML specification.</li>
+<li>Added checking for invalid comment termination ("---&gt;" is not
+ allowed)</li>
+</ul>
+<h2><a name="7_7">Changes in Mini-XML 2.1</a></h2>
+<ul>
+<li>Added support for custom data nodes (STR #6)</li>
+<li>Now treat UTF-8 sequences which are longer than necessary as an
+ error (STR #4)</li>
+<li>Fixed entity number support (STR #8)</li>
+<li>Fixed mxmlLoadString() bug with UTF-8 (STR #7)</li>
+<li>Fixed entity lookup bug (STR #5)</li>
+<li>Added mxmlLoadFd() and mxmlSaveFd() functions.</li>
+<li>Fixed multi-word UTF-16 handling.</li>
+</ul>
+<h2><a name="7_8">Changes in Mini-XML 2.0</a></h2>
+<ul>
+<li>New programmers manual.</li>
+<li>Added Visual C++ project files for Microsoft Windows users.</li>
+<li>Added optimizations to mxmldoc, mxmlSaveFile(), and mxmlIndexNew()
+ (STR #2)</li>
+<li>mxmlEntityAddCallback() now returns an integer status (STR #2)</li>
+<li>Added UTF-16 support (input only; all output is UTF-8)</li>
+<li>Added index functions to build a searchable index of XML nodes.</li>
+<li>Added character entity callback interface to support additional
+ character entities beyond those defined in the XHTML specification.</li>
+<li>Added support for XHTML character entities.</li>
+<li>The mxmldoc utility now produces XML output which conforms to an
+ updated XML schema, described in the file "doc/mxmldoc.xsd".</li>
+<li>Changed the whitespace callback interface to return strings instead
+ of a single character, allowing for greater control over the formatting
+ of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
+ TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</li>
+<li>The mxmldoc utility now produces XML output which conforms to an
+ updated XML schema, described in the file "doc/mxmldoc.xsd".</li>
+<li>Changed the whitespace callback interface to return strings instead
+ of a single character, allowing for greater control over the formatting
+ of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
+ TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</li>
+<li>The mxmldoc utility is now capable of documenting C++ classes,
+ functions, and structures, and correctly handles C++ comments.</li>
+<li>Added new modular tests for mxmldoc.</li>
+<li>Updated the mxmldoc output to be more compatible with embedding in
+ manuals produced with HTMLDOC.</li>
+<li>The makefile incorrectly included a "/" separator between the
+ destination path and install path. This caused problems when building
+ and installing with MingW.</li>
+</ul>
+<h2><a name="7_9">Changes in Mini-XML 1.3</a></h2>
+<ul>
+<li>Fixes for mxmldoc.</li>
+<li>Added support for reading standard HTML entity names.</li>
+<li>mxmlLoadString/File() did not decode character entities in element
+ names, attribute names, or attribute values.</li>
+<li>mxmlLoadString/File() would crash when loading non- conformant XML
+ data under an existing parent (top) node.</li>
+<li>Fixed several bugs in the mxmldoc utility.</li>
+<li>Added new error callback function to catch a variety of errors and
+ log them to someplace other than stderr.</li>
+<li>The mxmlElementSetAttr() function now allows for NULL attribute
+ values.</li>
+<li>The load and save functions now properly handle quoted element and
+ attribute name strings properly, e.g. for !DOCTYPE declarations.</li>
+</ul>
+<h2><a name="7_10">Changes in Mini-XML 1.2</a></h2>
+<ul>
+<li>Added new "set" methods to set the value of a node.</li>
+<li>Added new formatted text methods mxmlNewTextf() and mxmlSetTextf()
+ to create/set a text node value using printf-style formats.</li>
+<li>Added new standard callbacks for use with the mxmlLoad functions.</li>
+<li>Updated the HTML documentation to include examples of the walk and
+ load function output.</li>
+<li>Added --with/without-ansi configure option to control the strdup()
+ function check.</li>
+<li>Added --with/without-snprintf configure option to control the
+ snprintf() and vsnprintf() function checks.</li>
+</ul>
+<h2><a name="7_11">Changes in Mini-XML 1.1.2</a></h2>
+<ul>
+<li>The mxml(3) man page wasn't updated for the string functions.</li>
+<li>mxmlSaveString() returned the wrong number of characters.</li>
+<li>mxml_add_char() updated the buffer pointer in the wrong place.</li>
+</ul>
+<h2><a name="7_12">Changes in Mini-XML 1.1.1</a></h2>
+<ul>
+<li>The private mxml_add_ch() function did not update the
+ start-of-buffer pointer which could cause a crash when using
+ mxmlSaveString().</li>
+<li>The private mxml_write_ws() function called putc() instead of using
+ the proper callback which could cause a crash when using
+ mxmlSaveString().</li>
+<li>Added a mxmlSaveAllocString() convenience function for saving an XML
+ node tree to an allocated string.</li>
+</ul>
+<h2><a name="7_13">Changes in Mini-XML 1.1</a></h2>
+<ul>
+<li>The mxmlLoadFile() function now uses dynamically allocated string
+ buffers for element names, attribute names, and attribute values.
+ Previously they were capped at 16383, 255, and 255 bytes, respectively.</li>
+<li>Added a new mxmlLoadString() function for loading an XML node tree
+ from a string.</li>
+<li>Added a new mxmlSaveString() function for saving an XML node tree to
+ a string.</li>
+<li>Add emulation of strdup() if the local platform does not provide the
+ function.</li>
+</ul>
+<h2><a name="7_14">Changes in Mini-XML 1.0</a></h2>
+<ul>
+<li>The mxmldoc program now handles function arguments, structures,
+ unions, enumerations, classes, and typedefs properly.</li>
+<li>Documentation provided via mxmldoc and more in-line comments in the
+ code.</li>
+<li>Added man pages and packaging files.</li>
+</ul>
+<h2><a name="7_15">Changes in Mini-XML 0.93</a></h2>
+<ul>
+<li>New mxmldoc example program that is also used to create and update
+ code documentation using XML and produce HTML reference pages.</li>
+<li>Added mxmlAdd() and mxmlRemove() functions to add and remove nodes
+ from a tree. This provides more flexibility over where the nodes are
+ inserted and allows nodes to be moved within the tree as needed.</li>
+<li>mxmlLoadFile() now correctly handles comments.</li>
+<li>mxmlLoadFile() now supports the required "gt", "quot", and "nbsp"
+ character entities.</li>
+<li>mxmlSaveFile() now uses newlines as whitespace when valid to do so.</li>
+<li>mxmlFindElement() now also takes attribute name and attribute value
+ string arguments to limit the search to specific elements with
+ attributes and/or values.</li>
+ NULL pointers can be used as "wildcards".
+<li>Added uninstall target to makefile, and auto-reconfig if Makefile.in
+ or configure.in are changed.</li>
+<li>mxmlFindElement(), mxmlWalkNext(), and mxmlWalkPrev() now all
+ provide "descend" arguments to control whether they descend into child
+ nodes in the tree.</li>
+<li>Fixed some whitespace issues in mxmlLoadFile().</li>
+<li>Fixed Unicode output and whitespace issues in mxmlSaveFile().</li>
+<li>mxmlSaveFile() now supports a whitespace callback to provide more
+ human-readable XML output under program control.</li>
+</ul>
+<h2><a name="7_16">Changes in Mini-XML 0.92</a></h2>
+<ul>
+<li>mxmlSaveFile() didn't return a value on success.</li>
+</ul>
+<h2><a name="7_17">Changes in Mini-XML 0.91</a></h2>
+<ul>
+<li>mxmlWalkNext() would go into an infinite loop.</li>
+</ul>
+<h2><a name="7_18">Changes in Mini-XML 0.9</a></h2>
+<ul>
+<li>Initial public release.</li>
+</ul>
+<hr noshade="noshade">
+<div class="body">
+<h1 align="right"><a name="REFERENCE"><img alt="C" src="minixml-cn_files/C.gif" align="right" height="100" hspace="10" width="100"></a>库参考手册</h1>
+<h2 class="title"><a name="8_1">内容</a></h2>
+<ul class="contents">
+<li><a href="#FUNCTIONS">函数</a>
+<ul class="code">
+<li><a href="#mxmlAdd" title="Add a node to a tree.">mxmlAdd</a></li>
+<li><a href="#mxmlDelete" title="Delete a node and all of its children.">
+mxmlDelete</a></li>
+<li><a href="#mxmlElementDeleteAttr" title="Delete an attribute.">
+mxmlElementDeleteAttr</a></li>
+<li><a href="#mxmlElementGetAttr" title="Get an attribute.">
+mxmlElementGetAttr</a></li>
+<li><a href="#mxmlElementSetAttr" title="Set an attribute.">
+mxmlElementSetAttr</a></li>
+<li><a href="#mxmlElementSetAttrf" title="Set an attribute with a formatted value.">
+mxmlElementSetAttrf</a></li>
+<li><a href="#mxmlEntityAddCallback" title="Add a callback to convert entities to Unicode.">
+mxmlEntityAddCallback</a></li>
+<li><a href="#mxmlEntityGetName" title="Get the name that corresponds to the character value.">
+mxmlEntityGetName</a></li>
+<li><a href="#mxmlEntityGetValue" title="Get the character corresponding to a named entity.">
+mxmlEntityGetValue</a></li>
+<li><a href="#mxmlEntityRemoveCallback" title="Remove a callback.">
+mxmlEntityRemoveCallback</a></li>
+<li><a href="#mxmlFindElement" title="Find the named element.">
+mxmlFindElement</a></li>
+<li><a href="#mxmlIndexDelete" title="Delete an index.">mxmlIndexDelete</a>
+</li>
+<li><a href="#mxmlIndexEnum" title="Return the next node in the index.">
+mxmlIndexEnum</a></li>
+<li><a href="#mxmlIndexFind" title="Find the next matching node.">
+mxmlIndexFind</a></li>
+<li><a href="#mxmlIndexNew" title="Create a new index.">mxmlIndexNew</a></li>
+<li><a href="#mxmlIndexReset" title="Reset the enumeration/find pointer in the index and return the first node in the index.">
+mxmlIndexReset</a></li>
+<li><a href="#mxmlLoadFd" title="Load a file descriptor into an XML node tree.">
+mxmlLoadFd</a></li>
+<li><a href="#mxmlLoadFile" title="Load a file into an XML node tree.">
+mxmlLoadFile</a></li>
+<li><a href="#mxmlLoadString" title="Load a string into an XML node tree.">
+mxmlLoadString</a></li>
+<li><a href="#mxmlNewCDATA" title="Create a new CDATA node.">
+mxmlNewCDATA</a></li>
+<li><a href="#mxmlNewCustom" title="Create a new custom data node.">
+mxmlNewCustom</a></li>
+<li><a href="#mxmlNewElement" title="Create a new element node.">
+mxmlNewElement</a></li>
+<li><a href="#mxmlNewInteger" title="Create a new integer node.">
+mxmlNewInteger</a></li>
+<li><a href="#mxmlNewOpaque" title="Create a new opaque string.">
+mxmlNewOpaque</a></li>
+<li><a href="#mxmlNewReal" title="Create a new real number node.">
+mxmlNewReal</a></li>
+<li><a href="#mxmlNewText" title="Create a new text fragment node.">
+mxmlNewText</a></li>
+<li><a href="#mxmlNewTextf" title="Create a new formatted text fragment node.">
+mxmlNewTextf</a></li>
+<li><a href="#mxmlNewXML" title="Create a new XML document tree.">
+mxmlNewXML</a></li>
+<li><a href="#mxmlRelease" title="Release a node.">mxmlRelease</a></li>
+<li><a href="#mxmlRemove" title="Remove a node from its parent.">
+mxmlRemove</a></li>
+<li><a href="#mxmlRetain" title="Retain a node.">mxmlRetain</a></li>
+<li><a href="#mxmlSAXLoadFd" title="Load a file descriptor into an XML node tree using a SAX callback.">
+mxmlSAXLoadFd</a></li>
+<li><a href="#mxmlSAXLoadFile" title="Load a file into an XML node tree using a SAX callback.">
+mxmlSAXLoadFile</a></li>
+<li><a href="#mxmlSAXLoadString" title="Load a string into an XML node tree using a SAX callback.">
+mxmlSAXLoadString</a></li>
+<li><a href="#mxmlSaveAllocString" title="Save an XML node tree to an allocated string.">
+mxmlSaveAllocString</a></li>
+<li><a href="#mxmlSaveFd" title="Save an XML tree to a file descriptor.">
+mxmlSaveFd</a></li>
+<li><a href="#mxmlSaveFile" title="Save an XML tree to a file.">
+mxmlSaveFile</a></li>
+<li><a href="#mxmlSaveString" title="Save an XML node tree to a string.">
+mxmlSaveString</a></li>
+<li><a href="#mxmlSetCDATA" title="Set the element name of a CDATA node.">
+mxmlSetCDATA</a></li>
+<li><a href="#mxmlSetCustom" title="Set the data and destructor of a custom data node.">
+mxmlSetCustom</a></li>
+<li><a href="#mxmlSetCustomHandlers" title="Set the handling functions for custom data.">
+mxmlSetCustomHandlers</a></li>
+<li><a href="#mxmlSetElement" title="Set the name of an element node.">
+mxmlSetElement</a></li>
+<li><a href="#mxmlSetErrorCallback" title="Set the error message callback.">
+mxmlSetErrorCallback</a></li>
+<li><a href="#mxmlSetInteger" title="Set the value of an integer node.">
+mxmlSetInteger</a></li>
+<li><a href="#mxmlSetOpaque" title="Set the value of an opaque node.">
+mxmlSetOpaque</a></li>
+<li><a href="#mxmlSetReal" title="Set the value of a real number node.">
+mxmlSetReal</a></li>
+<li><a href="#mxmlSetText" title="Set the value of a text node.">
+mxmlSetText</a></li>
+<li><a href="#mxmlSetTextf" title="Set the value of a text node to a formatted string.">
+mxmlSetTextf</a></li>
+<li><a href="#mxmlSetWrapMargin" title="Set the the wrap margin when saving XML data.">
+mxmlSetWrapMargin</a></li>
+<li><a href="#mxmlWalkNext" title="Walk to the next logical node in the tree.">
+mxmlWalkNext</a></li>
+<li><a href="#mxmlWalkPrev" title="Walk to the previous logical node in the tree.">
+mxmlWalkPrev</a></li>
+</ul>
+</li>
+<li><a href="#TYPES">数据类型</a>
+<ul class="code">
+<li><a href="#mxml_attr_t" title="An XML element attribute value.">
+mxml_attr_t</a></li>
+<li><a href="#mxml_custom_destroy_cb_t" title="Custom data destructor">
+mxml_custom_destroy_cb_t</a></li>
+<li><a href="#mxml_custom_load_cb_t" title="Custom data load callback function">
+mxml_custom_load_cb_t</a></li>
+<li><a href="#mxml_custom_save_cb_t" title="Custom data save callback function">
+mxml_custom_save_cb_t</a></li>
+<li><a href="#mxml_custom_t" title="An XML custom value. ">mxml_custom_t</a>
+</li>
+<li><a href="#mxml_element_t" title="An XML element value.">
+mxml_element_t</a></li>
+<li><a href="#mxml_error_cb_t" title="Error callback function">
+mxml_error_cb_t</a></li>
+<li><a href="#mxml_index_t" title="An XML node index.">mxml_index_t</a></li>
+<li><a href="#mxml_load_cb_t" title="Load callback function">
+mxml_load_cb_t</a></li>
+<li><a href="#mxml_node_t" title="An XML node.">mxml_node_t</a></li>
+<li><a href="#mxml_save_cb_t" title="Save callback function">
+mxml_save_cb_t</a></li>
+<li><a href="#mxml_sax_cb_t" title="SAX callback function">mxml_sax_cb_t</a>
+</li>
+<li><a href="#mxml_sax_event_t" title="SAX event type.">mxml_sax_event_t</a>
+</li>
+<li><a href="#mxml_text_t" title="An XML text value.">mxml_text_t</a></li>
+<li><a href="#mxml_value_t" title="An XML node value.">mxml_value_t</a></li>
+</ul>
+</li>
+<li><a href="#STRUCTURES">结构体</a>
+<ul class="code">
+<li><a href="#mxml_attr_s" title="An XML element attribute value.">
+mxml_attr_s</a></li>
+<li><a href="#mxml_custom_s" title="An XML custom value. ">mxml_custom_s</a>
+</li>
+<li><a href="#mxml_element_s" title="An XML element value.">
+mxml_element_s</a></li>
+<li><a href="#mxml_index_s" title="An XML node index.">mxml_index_s</a></li>
+<li><a href="#mxml_node_s" title="An XML node.">mxml_node_s</a></li>
+<li><a href="#mxml_text_s" title="An XML text value.">mxml_text_s</a></li>
+</ul>
+</li>
+<li><a href="#UNIONS">联合</a>
+<ul class="code">
+<li><a href="#mxml_value_u" title="An XML node value.">mxml_value_u</a></li>
+</ul>
+</li>
+<li><a href="#ENUMERATIONS">常量枚举</a>
+<ul class="code">
+<li><a href="#mxml_sax_event_e" title="SAX event type.">mxml_sax_event_e</a>
+</li>
+<li><a href="#mxml_type_e" title="The XML node type.">mxml_type_e</a></li>
+</ul>
+</li>
+</ul>
+<h2 class="title"><a name="FUNCTIONS">函数</a></h2>
+<h3 class="function"><a name="mxmlAdd">mxmlAdd</a></h3>
+<p class="description">添加一个节点到树中</p>
+<p class="code"> void mxmlAdd (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int where,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *child,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点</dd>
+<dt>where</dt>
+<dd class="description">添加到哪里, MXML_ADD_BEFORE or MXML_ADD_AFTER</dd>
+<dt>child</dt>
+<dd class="description">where的子节点或者使用MXML_ADD_TO_PARENT</dd>
+<dt>node</dt>
+<dd class="description">准备添加的节点</dd>
+</dl>
+<h4 class="discussion">说明</h4>
+<p class="discussion">添加一个指定的节点到父节点，如果child参数不是NULL，将这个新的节点添加到指定的"child"的前面或者后面（由where参数决定）。如果child参数是NULL，把新节点添加到子节点列表的最前面(MXML_ADD_BEFORE)或者时子节点列表的最后面(MXML_ADD_AFTER)。常量MXML_ADD_TO_PARENT 可以被用来指定一个NULL的child指针。</p>
+<h3 class="function"><a name="mxmlDelete">mxmlDelete</a></h3>
+<p class="description">删除一个节点和它的所有的子节点。</p>
+<p class="code"> void mxmlDelete (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被删除的节点</dd>
+</dl>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个指定的节点有一个父节点，这个函数首先使用mxmlRemove() 函数从它的父节点中移除自己。</p>
+<h3 class="function"><a name="8_2_3">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.4&nbsp;</a><a name="mxmlElementDeleteAttr">mxmlElementDeleteAttr</a>
+</h3>
+<p class="description">删除一个参数</p>
+<p class="code"> void mxmlElementDeleteAttr (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">XML元素节点</dd>
+<dt>name</dt>
+<dd class="description">属性名称</dd>
+</dl>
+<h3 class="function"><a name="mxmlElementGetAttr">mxmlElementGetAttr</a></h3>
+<p class="description">获取一个参数</p>
+<p class="code"> const char *mxmlElementGetAttr (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">XML元素节点</dd>
+<dt>name</dt>
+<dd class="description">属性名称</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">属性值或者NULL</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果node参数不是一个XML元素或者指定的属性名不存在则返回NULL。</p>
+<h3 class="function"><a name="mxmlElementSetAttr">mxmlElementSetAttr</a></h3>
+<p class="description">设置一个属性。</p>
+<p class="code"> void mxmlElementSetAttr (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *value
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">XML元素节点</dd>
+<dt>name</dt>
+<dd class="description">属性名称</dd>
+<dt>value</dt>
+<dd class="description">属性值</dd>
+</dl>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个属性名已经存在，这个属性的值将被替换为新的字符串值。这个字符串值将被拷贝到这个XML元素节点，如果这个节点不是一个XML元素，则这个函数不做任何事。</p>
+<h3 class="function"><a name="8_2_6">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlElementSetAttrf">mxmlElementSetAttrf</a></h3>
+<p class="description">设置一个XML元素属性使用一个格式化的值。</p>
+<p class="code"> void mxmlElementSetAttrf (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *format,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;...
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">XML元素节点</dd>
+<dt>name</dt>
+<dd class="description">属性名</dd>
+<dt>format</dt>
+<dd class="description">"printf"风格的属性值</dd>
+<dt>...</dt>
+<dd class="description">需要的附加参数(printf)风格</dd>
+</dl>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个属性名已经存在，这个属性的值将被替换为新的格式化字符串值。这个格式化后字符串值将被拷贝到这个XML元素节点，如果这个节点不是一个XML元素，则这个函数不做任何事。</p>
+<h3 class="function"><a name="mxmlEntityAddCallback">
+mxmlEntityAddCallback</a></h3>
+<p class="description">添加一个回调函数来将XML实体转换为Unicode编码字符。</p>
+<p class="code"> int mxmlEntityAddCallback (void);</p>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">0 成功, -1 失败</p>
+<div class="zf" >回调函数用来将类似于"&amp;amp;"之类的XML实体字符串转化为用户设定的Unicode编码。此函数的原型应该为：int mxmlEntityAddCallback(int (*cb)(const char *name)) 参数为自定义中的回调函数。目前仅支持将实体转换为单个字符的转换，而不支持实体字符串。 Z.F</div>
+<h3 class="function"><a name="mxmlEntityGetName">mxmlEntityGetName</a></h3>
+<p class="description">获取一个字符值对应的XML实体名字。</p>
+<p class="code"> const char *mxmlEntityGetName (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int val
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>val</dt>
+<dd class="description">字符值</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">XML实体名字或者NULL</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果val不需要被标识为一个命名的XML实体，返回NULL。</p>
+<div class="zf" >如：val = '&amp;'，将返回"&amp;amp;"  Z.F</div>
+
+<h3 class="function"><a name="mxmlEntityGetValue">mxmlEntityGetValue</a></h3>
+<p class="description">获取一个代表到一个XML命名实体的字符。</p>
+<p class="code"> int mxmlEntityGetValue (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>name</dt>
+<dd class="description">XML实体名字</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">字符值或者-1代表错误</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">XML实体名字总是可以被关联到一个数字常量，如果这个名字未知则返回-1。</p>
+<h3 class="function"><a name="mxmlEntityRemoveCallback">
+mxmlEntityRemoveCallback</a></h3>
+<p class="description">删除一个XML实体回调。</p>
+<p class="code"> void mxmlEntityRemoveCallback (void);</p>
+<div class="zf" >函数原型应该是：void mxmlEntityRemoveCallback(int (*cb)(const char *name));  Z.F</div>
+
+<h3 class="function"><a name="mxmlFindElement">mxmlFindElement</a></h3>
+<p class="description">搜索一个命名的XML元素。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlFindElement
+ (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *attr,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *value,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int descend
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">当前节点</dd>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>name</dt>
+<dd class="description">XML元素名，或者NULL匹配所有元素</dd>
+<dt>attr</dt>
+<dd class="description">属性名，或者NULL表示不匹配属性</dd>
+<dt>value</dt>
+<dd class="description">属性值，或者NULL表示任何值</dd>
+<dt>descend</dt>
+<dd class="description">在XML树中向下搜索模式： MXML_DESCEND,
+ MXML_NO_DESCEND, 或者 MXML_DESCEND_FIRST</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">XMl元素节点或者NULL</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">搜索可以被XML元素名，属性名和属性值所限定；任何名字或者值等于NULL被处理就相当于通配符，所以使用不同的搜索方法可以被实现用来查看所有的指定名称的XML元素或者是所有的具有指定属性的XML元素。参数： descend 确定了是否向下搜索子节点；通常你将使用 MXML_DESCEND_FIRST作为第一次搜索，然后使用使用 MXML_NO_DESCEND来发现更多的这个节点的直接子节点。 
+ top 节点参数约束了搜索在一个指定节点的子节点中。</p>
+<h3 class="function"><a name="mxmlIndexDelete">mxmlIndexDelete</a></h3>
+<p class="description">删除一个索引。</p>
+<p class="code"> void mxmlIndexDelete (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_index_t">mxml_index_t</a> *ind
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>ind</dt>
+<dd class="description">被删除的索引</dd>
+</dl>
+<h3 class="function"><a name="mxmlIndexEnum">mxmlIndexEnum</a></h3>
+<p class="description">返回索引中的下一个节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlIndexEnum (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_index_t">mxml_index_t</a> *ind
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>ind</dt>
+<dd class="description">进行枚举的索引</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">下一个节点或者NULL代表没有更多的节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">返回节点顺序将按照索引的排序被返回。</p>
+<h3 class="function"><a name="mxmlIndexFind">mxmlIndexFind</a></h3>
+<p class="description">搜索下一个匹配的节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlIndexFind (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_index_t">mxml_index_t</a> *ind,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *element,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *value
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>ind</dt>
+<dd class="description">进行搜索的索引 </dd>
+<dt>element</dt>
+<dd class="description">如不为NULL，代表想要搜索的XML元素名。</dd>
+<dt>value</dt>
+<dd class="description">如不为NULL，代表想要搜索的属性值。</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">节点或者NULL代表没有发现。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">你在第一次使用一个特定的包含"element"和"value"字符串的集合来调用这个函数之前应该首先调用mxmlIndexReset()函数。如果"element"和"value"同时等于NULL则相当于调用了mxmlIndexEnum()函数。</p>
+<h3 class="function"><a name="mxmlIndexNew">mxmlIndexNew</a></h3>
+<p class="description">创建一个新的索引。</p>
+<p class="code"> <a href="#mxml_index_t">mxml_index_t</a> *mxmlIndexNew
+ (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *element,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *attr
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">XML 节点树</dd>
+<dt>element</dt>
+<dd class="description">索引的XML元素名或者NULL代表所有元素</dd>
+<dt>attr</dt>
+<dd class="description">索引的XML属性名或者NULL代表不使用。</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新的索引</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">被创建的索引将包含具备指定的元素名和/或属性所有的节点。如果"element" 和"attr"同时等于NULL，索引将包含一个被排序的完整节点树的列表。节点被按照XML元素名和选择的属性值（如果"attr"参数不等于NULL）进行排序。</p>
+<h3 class="function"><a name="mxmlIndexReset">mxmlIndexReset</a></h3>
+<p class="description">重设索引中的枚举/搜索指针并且返回索引中的第一个节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlIndexReset
+ (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_index_t">mxml_index_t</a> *ind
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>ind</dt>
+<dd class="description">准备重设的索引</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">第一个节点或者NULL代表索引为空。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">这个函数需要被首先调用，在第一次使用函数mxmlIndexEnum() 或 mxmlIndexFind()之前。</p>
+<h3 class="function"><a name="mxmlLoadFd">mxmlLoadFd</a></h3>
+<p class="description">载入一个文件描述符到一个XML节点树。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFd (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int fd,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>top</dt>
+<dd class="description">顶部节点</dd>
+<dt>fd</dt>
+<dd class="description">需要进行读取的文件描述符</dd>
+<dt>cb</dt>
+<dd class="description">回调函数或者 MXML_NO_CALLBACK</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">第一个节点或者NULL代表文件不能被读取。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">在指定文件中的所有节点将被添加到所指定的顶部节点。如果没有"top"顶部节点被提供，这个XML文件必须是规范的并且整个文件只有一个父节点为&lt;?xml&gt; 。
+ 回调函数返回的值类型将被使用到子节点。如果 MXML_NO_CALLBACK 参数被指定，那么所有的子节点将都会是MXML_ELEMENT 或者 MXML_TEXT 其中之一的节点。
+<br>
+<br> 常量 MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, 和 MXML_TEXT_CALLBACK 定义了将载入指定类型的子节点。</p>
+<h3 class="function"><a name="mxmlLoadFile">mxmlLoadFile</a></h3>
+<p class="description">载入一个文件到一个XML节点树。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFile (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;FILE *fp,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>fp</dt>
+<dd class="description">准备读取的文件</dd>
+<dt>cb</dt>
+<dd class="description">回调函数或MXML_NO_CALLBACK</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">第一个节点或者NULL代表文件不能被读取。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">在指定文件中的所有节点将被添加到所指定的顶部节点。如果没有"top"顶部节点被提供，这个XML文件必须是规范的并且整个文件只有一个父节点为&lt;?xml&gt; 。
+ 回调函数返回的值类型将被使用到子节点。如果 MXML_NO_CALLBACK 参数被指定，那么所有的子节点将都会是MXML_ELEMENT 或者 MXML_TEXT 其中之一的节点.
+<br>
+<br> 常量 MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, 和 MXML_TEXT_CALLBACK 定义了将载入指定类型的子节点。</p>
+<h3 class="function"><a name="mxmlLoadString">mxmlLoadString</a></h3>
+<p class="description">载入一个文件到一个XML节点树。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadString
+ (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *s,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>s</dt>
+<dd class="description">准备读取的字符串</dd>
+<dt>cb</dt>
+<dd class="description">回调函数或MXML_NO_CALLBACK</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">第一个节点或者NULL代表字符串中有错误。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">在指定字符串中的所有节点将被添加到所指定的顶部节点。如果没有"top"顶部节点被提供，这个XML字符串必须是规范的并且整个文件只有一个父节点为&lt;?xml&gt; 。
+ 回调函数返回的值类型将被使用到子节点。如果 MXML_NO_CALLBACK 参数被指定，那么所有的子节点将都会是MXML_ELEMENT 或者 MXML_TEXT 其中之一的节点.
+<br>
+<br> T常量 MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, 和 MXML_TEXT_CALLBACK 定义了将载入指定类型的子节点。</p>
+<h3 class="function"><a name="8_2_20">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlNewCDATA">mxmlNewCDATA</a></h3>
+<p class="description">创建一个新的CDATA 节点.</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCDATA (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *data
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或者MXML_NO_PARENT</dd>
+<dt>data</dt>
+<dd class="description">数据字符串</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新的节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的CDATA节点将被添加到指定父节点的子节点列表的最后，常量 MXML_NO_PARENT 可以被用来指定新的CDATA节点没有父节点。数据字符串必须是以空字符结尾，并被拷贝到新的CDATA节点。CDATA节点使用 MXML_ELEMENT 节点类型。</p>
+<h3 class="function"><a name="8_2_21">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.1&nbsp;</a><a name="mxmlNewCustom">mxmlNewCustom</a></h3>
+<p class="description">创建一个新的用户自定义数据节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCustom (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;void *data,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a>
+ destroy
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或者 MXML_NO_PARENT</dd>
+<dt>data</dt>
+<dd class="description">指向数据的指针</dd>
+<dt>destroy</dt>
+<dd class="description">销毁数据使用的函数</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的自定义节点将被添加到指定父节点的子节点列表的最后。常量 MXML_NO_PARENT 可以被用来指定新的自定义节点没有父节点。NULL可以被通过，当数据节点不是动态分配或者是独立管理时。  <div class="zf">最后一句NULL应该是指参数：destroy，表示不使用销毁函数。 Z.F</div></p>
+<h3 class="function"><a name="mxmlNewElement">mxmlNewElement</a></h3>
+<p class="description">创建一个新的XML元素节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewElement
+ (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或MXML_NO_PARENT</dd>
+<dt>name</dt>
+<dd class="description">XML元素名称</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的XML元素节点将被添加到指定父节点的子节点列表的最后。常量 MXML_NO_PARENT 可以被用来指定新的XML元素节点没有父节点。</p>
+<h3 class="function"><a name="mxmlNewInteger">mxmlNewInteger</a></h3>
+<p class="description">创建一个新的整数节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewInteger
+ (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int integer
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或MXML_NO_PARENT</dd>
+<dt>integer</dt>
+<dd class="description">整形值</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的整数节点将被添加到指定父节点的子节点列表的最后。常量 MXML_NO_PARENT 可以被用来指定新的整数节点没有父节点。</p>
+<h3 class="function"><a name="mxmlNewOpaque">mxmlNewOpaque</a></h3>
+<p class="description">创建一个新的不透明字符串节点</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewOpaque (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *opaque
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或MXML_NO_PARENT</dd>
+<dt>opaque</dt>
+<dd class="description">不透明字符串</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的不透明字符串节点将被添加到指定父节点的子节点列表的最后。常量 MXML_NO_PARENT 可以被用来指定新的不透明字符串节点没有父节点。这个字符串必须是空字符结尾并被拷贝到新节点。</p>
+<h3 class="function"><a name="mxmlNewReal">mxmlNewReal</a></h3>
+<p class="description">创建一个新的浮点数节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewReal (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;double real
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或MXML_NO_PARENT</dd>
+<dt>real</dt>
+<dd class="description">浮点数值</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的浮点数节点将被添加到指定父节点的子节点列表的最后。常量 MXML_NO_PARENT 可以被用来指定新的浮点数节点没有父节点。</p>
+<h3 class="function"><a name="mxmlNewText">mxmlNewText</a></h3>
+<p class="description">创建新的文本分段节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewText (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int whitespace,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *string
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或MXML_NO_PARENT</dd>
+<dt>whitespace</dt>
+<dd class="description">1 = 有前导空格, 0 = 没有空格</dd>
+<dt>string</dt>
+<dd class="description">字符串</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的文本节点将被添加到指定父节点的子节点列表的最后。常量 MXML_NO_PARENT 可以被用来指定新的文本节点没有父节点。参数：whitespace被用在指定是否在这个节点前面有前导空格。文本字符串必须时以空字符结尾并被拷贝到新的节点。</p>
+<h3 class="function"><a name="mxmlNewTextf">mxmlNewTextf</a></h3>
+<p class="description">创建一个新的格式化的文本分段节点</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewTextf (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *parent,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int whitespace,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *format,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;...
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>parent</dt>
+<dd class="description">父节点或MXML_NO_PARENT</dd>
+<dt>whitespace</dt>
+<dd class="description">1 = 有前导空格, 0 = 没有空格</dd>
+<dt>format</dt>
+<dd class="description">"printf"风格的格式化字符串</dd>
+<dt>...</dt>
+<dd class="description">需要的附加参数</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">新的文本节点将被添加到指定父节点的子节点列表的最后。常量 MXML_NO_PARENT 可以被用来指定新的文本节点没有父节点。参数：whitespace被用在指定是否在这个节点前面有前导空格。格式化字符串必须时以空字符结尾并被格式化到新的节点。</p>
+<h3 class="function"><a name="8_2_28">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlNewXML">mxmlNewXML</a></h3>
+<p class="description">创建一个新的XML文档树。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewXML (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *version
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>version</dt>
+<dd class="description">使用的版本号</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新的 "?xml" 节点</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">参数 "version" 指定了放在"?xml" 元素节点中的版本号。如果为NULL则假定为 "version 1.0"。</p>
+<h3 class="function"><a name="8_2_29">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlRelease">mxmlRelease</a></h3>
+<p class="description">释放一个节点。</p>
+<p class="code"> int mxmlRelease (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">节点</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新的引用计数</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">当引用计数为0时，这个节点（以及所有子节点）被通过函数 mxmlDelete() 所删除。</p>
+<h3 class="function"><a name="mxmlRemove">mxmlRemove</a></h3>
+<p class="description">移除一个节点从它的父节点中。</p>
+<p class="code"> void mxmlRemove (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被移除的节点</dd>
+</dl>
+<h4 class="discussion">说明</h4>
+<p class="discussion">不释放节点使用的内存，使用函数 mxmlDelete() 来释放。如果这个节点没有父节点则这个函数不做任何事。</p>
+<h3 class="function"><a name="8_2_31">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlRetain">mxmlRetain</a></h3>
+<p class="description">保留一个节点</p>
+<p class="code"> int mxmlRetain (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">节点</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">新的引用计数</p>
+<h3 class="function"><a name="8_2_32">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlSAXLoadFd">mxmlSAXLoadFd</a></h3>
+<p class="description">使用SAX回调从一个文件描述符中加载数据到一个XML节点树。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlSAXLoadFd (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int fd,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;void *sax_data
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>fd</dt>
+<dd class="description">进行读取的文件描述符</dd>
+<dt>cb</dt>
+<dd class="description">XML节点类型回调函数或者MXML_NO_CALLBACK</dd>
+<dt>sax_cb</dt>
+<dd class="description">SAX 回调函数或者MXML_NO_CALLBACK</dd>
+<dt>sax_data</dt>
+<dd class="description">SAX 用户数据</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">第一个节点或者NULL 代表文件不能被读取。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">在指定文件中的节点将被添加到指定的顶级节点中。如果"top"节点没有提供，这个XML文件必须是规范的并且整个文件只有一个父节点为&lt;?xml&gt; 。回调函数"cb"返回子节点的值类型。如果 MXML_NO_CALLBACK 参数被指定，那么所有的子节点将都会是MXML_ELEMENT 或者 MXML_TEXT 其中之一的节点。
+<br>
+<br> 常量 MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, 和MXML_TEXT_CALLBACK 被定义用于加载指定类型的子节点。
+<br>
+<br> 在SAX 回调函数中("sax_cb")，对于所有节点都必须调用mxmlRetain()函数用于保留为以后使用。否则，节点将在父节点被关闭时或者到达数据、注释、CDATA和指令节点时被删除。</p>
+<h3 class="function"><a name="8_2_33">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlSAXLoadFile">mxmlSAXLoadFile</a></h3>
+<p class="description">使用SAX回调从一个文件中加载数据到一个XML节点树。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlSAXLoadFile
+ (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;FILE *fp,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;void *sax_data
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>fp</dt>
+<dd class="description">进行读取的文件</dd>
+<dt>cb</dt>
+<dd class="description">XML节点类型回调函数或者MXML_NO_CALLBACK</dd>
+<dt>sax_cb</dt>
+<dd class="description">SAX 回调函数或者MXML_NO_CALLBACK</dd>
+<dt>sax_data</dt>
+<dd class="description">SAX 用户数据</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">第一个节点或者NULL 代表文件不能被读取。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">在指定文件中的节点将被添加到指定的顶级节点中。如果"top"节点没有提供，这个XML文件必须是规范的并且整个文件只有一个父节点为&lt;?xml&gt; 。回调函数"cb"返回子节点的值类型。如果 MXML_NO_CALLBACK 参数被指定，那么所有的子节点将都会是MXML_ELEMENT 或者 MXML_TEXT 其中之一的节点。
+<br>
+<br> 常量 MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, 和MXML_TEXT_CALLBACK 被定义用于加载指定类型的子节点。
+<br>
+<br> 在SAX 回调函数中("sax_cb")，对于所有节点都必须调用mxmlRetain()函数用于保留为以后使用。否则，节点将在父节点被关闭时或者到达数据、注释、CDATA和指令节点时被删除。</p>
+<h3 class="function"><a name="8_2_34">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlSAXLoadString">mxmlSAXLoadString</a></h3>
+<p class="description">使用SAX回调从一个字符串中加载数据到一个XML节点树。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a>
+ *mxmlSAXLoadString (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *s,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;void *sax_data
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>s</dt>
+<dd class="description">准备加载的字符串</dd>
+<dt>cb</dt>
+<dd class="description">XML节点类型回调函数或者MXML_NO_CALLBACK</dd>
+<dt>sax_cb</dt>
+<dd class="description">SAX 回调函数或者MXML_NO_CALLBACK</dd>
+<dt>sax_data</dt>
+<dd class="description">SAX 用户数据</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">第一个节点或者NULL 代表文件不能被读取。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">在指定字符串中的节点将被添加到指定的顶级节点中。如果"top"节点没有提供，这个XML字符串必须是规范的并且整个文件只有一个父节点为&lt;?xml&gt; 。回调函数"cb"返回子节点的值类型。如果 MXML_NO_CALLBACK 参数被指定，那么所有的子节点将都会是MXML_ELEMENT 或者 MXML_TEXT 其中之一的节点。
+<br>
+<br> 常量 MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, 和MXML_TEXT_CALLBACK 被定义用于加载指定类型的子节点。
+<br>
+<br> 在SAX 回调函数中("sax_cb")，对于所有节点都必须调用mxmlRetain()函数用于保留为以后使用。否则，节点将在父节点被关闭时或者到达数据、注释、CDATA和指令节点时被删除。</p>
+<h3 class="function"><a name="mxmlSaveAllocString">mxmlSaveAllocString</a>
+</h3>
+<p class="description">保存一个XML节点树到一个内部分配的字符串。</p>
+<p class="code"> char *mxmlSaveAllocString (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">准备要写入的节点</dd>
+<dt>cb</dt>
+<dd class="description">空白回调函数或者MXML_NO_CALLBACK</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">分配的字符串或者 NULL</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">这个函数返回一个指向字符串的指针包含了描述整个XML节点树的文本。当你使用完这个字符串后需要使用free()函数来释放。如果这个节点产生了一个空字符或者字符串分配失败将返回NULL。
+<br>
+<br> 回调函数参数指定了一个函数用来在每个XML元素之前或者之后返回一个空白字符串或者NULL。如果指定了MXML_NO_CALLBACK，空格将仅被添加到具有前导空格的MXML_TEXT节点前面（node->value->text->whitespace = 1）和在一个打开XML元素标签的属性名称前面。
+</p>
+<h3 class="function"><a name="mxmlSaveFd">mxmlSaveFd</a></h3>
+<p class="description">保存一个XML节点树到一个文件描述符。</p>
+<p class="code"> int mxmlSaveFd (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int fd,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">准备要写入的节点</dd>
+<dt>fd</dt>
+<dd class="description">准备写入的文件描述符</dd>
+<dt>cb</dt>
+<dd class="description">空白回调函数或者MXML_NO_CALLBACK</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，错误返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion"> 回调函数参数指定了一个函数用来在每个XML元素之前或者之后返回一个空白字符串或者NULL。如果指定了MXML_NO_CALLBACK，空格将仅被添加到具有前导空格的MXML_TEXT节点前面（node->value->text->whitespace = 1）和在一个打开XML元素标签的属性名称前面。</p>
+<h3 class="function"><a name="mxmlSaveFile">mxmlSaveFile</a></h3>
+<p class="description">保存一个XML节点树到一个文件。</p>
+<p class="code"> int mxmlSaveFile (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;FILE *fp,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">准备要写入的节点</dd>
+<dt>fp</dt>
+<dd class="description">准备写入的文件。</dd>
+<dt>cb</dt>
+<dd class="description">空白回调函数或者MXML_NO_CALLBACK</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，错误返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion"> 回调函数参数指定了一个函数用来在每个XML元素之前或者之后返回一个空白字符串或者NULL。如果指定了MXML_NO_CALLBACK，空格将仅被添加到具有前导空格的MXML_TEXT节点前面（node->value->text->whitespace = 1）和在一个打开XML元素标签的属性名称前面。</p>
+<h3 class="function"><a name="mxmlSaveString">mxmlSaveString</a></h3>
+<p class="description">保存一个XML节点树到一个字符串。</p>
+<p class="code"> int mxmlSaveString (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;char *buffer,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int bufsize,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">准备要写入的节点</dd>
+<dt>buffer</dt>
+<dd class="description">字符串缓冲区</dd>
+<dt>bufsize</dt>
+<dd class="description">字符串缓冲区大小</dd>
+<dt>cb</dt>
+<dd class="description">空白回调函数或者MXML_NO_CALLBACK</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">字符串大小</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">这个函数返回字符串需要字节总数，但是最多拷贝(bufsize-1)个字符到指定的buffer中。
+<br>
+<div class="zf" >如：一个XML树字符串长度为200个字节，但缓冲区只有100字节，则返回200，但只拷贝了99个字符，最后一个为空字符。Z.F</a></div>
+<br>  回调函数参数指定了一个函数用来在每个XML元素之前或者之后返回一个空白字符串或者NULL。如果指定了MXML_NO_CALLBACK，空格将仅被添加到具有前导空格的MXML_TEXT节点前面（node->value->text->whitespace = 1）和在一个打开XML元素标签的属性名称前面。</p>
+<h3 class="function"><a name="8_2_39">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlSetCDATA">mxmlSetCDATA</a></h3>
+<p class="description">设置一个CDATA元素节点的名称。</p>
+<p class="code"> int mxmlSetCDATA (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *data
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">准备设置的节点</dd>
+<dt>data</dt>
+<dd class="description">新的数据字符串</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个CDATA节点则节点不发生改变。</p>
+<h3 class="function"><a name="8_2_40">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.1&nbsp;</a><a name="mxmlSetCustom">mxmlSetCustom</a></h3>
+<p class="description">对一个用户自定义数据节点设置数据和销毁回调函数。</p>
+<p class="code"> int mxmlSetCustom (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;void *data,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a>
+ destroy
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被设置的节点</dd>
+<dt>data</dt>
+<dd class="description">新的数据指针</dd>
+<dt>destroy</dt>
+<dd class="description">新的销毁回调函数</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个用户自定义节点则节点不发生改变。</p>
+<h3 class="function"><a name="mxmlSetCustomHandlers">
+mxmlSetCustomHandlers</a></h3>
+<p class="description">设置对于自定义数据的处理回调函数。</p>
+<p class="code"> void mxmlSetCustomHandlers (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_custom_load_cb_t">mxml_custom_load_cb_t</a>
+ load,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_custom_save_cb_t">mxml_custom_save_cb_t</a> save
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>load</dt>
+<dd class="description">加载回调函数</dd>
+<dt>save</dt>
+<dd class="description">保存回调函数</dd>
+</dl>
+<h4 class="discussion">说明</h4>
+<p class="discussion">加载回调函数接收一个节点指针和数据字符串，成功时必须返回 0，错误时返回一个非0值。
+<br>
+<br> 保存回调函数接收一个节点指针，成功时必须返回一个使用malloc分配的字符串，错误时返回NULL。</p>
+<h3 class="function"><a name="mxmlSetElement">mxmlSetElement</a></h3>
+<p class="description">设置XML元素节点的名字。</p>
+<p class="code"> int mxmlSetElement (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *name
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被设置的节点</dd>
+<dt>name</dt>
+<dd class="description">新的名称字符串</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个XML元素节点则节点不发生改变。</p>
+<h3 class="function"><a name="mxmlSetErrorCallback">mxmlSetErrorCallback</a>
+</h3>
+<p class="description">设置错误信息回调函数。</p>
+<p class="code"> void mxmlSetErrorCallback (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_error_cb_t">mxml_error_cb_t</a> cb
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>cb</dt>
+<dd class="description">错误回调函数</dd>
+</dl>
+<h3 class="function"><a name="mxmlSetInteger">mxmlSetInteger</a></h3>
+<p class="description">设置一个整数节点的值。</p>
+<p class="code"> int mxmlSetInteger (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int integer
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被设置的节点</dd>
+<dt>integer</dt>
+<dd class="description">整数值</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个整数节点则节点不发生改变。</p>
+<h3 class="function"><a name="mxmlSetOpaque">mxmlSetOpaque</a></h3>
+<p class="description">设置一个不透明字符串节点的值。</p>
+<p class="code"> int mxmlSetOpaque (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *opaque
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被设置的节点</dd>
+<dt>opaque</dt>
+<dd class="description">不透明字符串</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个不透明字符串节点则节点不发生改变。</p>
+<h3 class="function"><a name="mxmlSetReal">mxmlSetReal</a></h3>
+<p class="description">设置一个浮点数节点的值。</p>
+<p class="code"> int mxmlSetReal (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;double real
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被设置的节点</dd>
+<dt>real</dt>
+<dd class="description">浮点数值</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个浮点数节点则节点不发生改变。</p>
+<h3 class="function"><a name="mxmlSetText">mxmlSetText</a></h3>
+<p class="description">设置一个文本节点的值。</p>
+<p class="code"> int mxmlSetText (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int whitespace,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *string
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被设置的节点</dd>
+<dt>whitespace</dt>
+<dd class="description">1 = 有前导空格, 0 = 没有前导空格</dd>
+<dt>string</dt>
+<dd class="description">字符串</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个文本节点则节点不发生改变。</p>
+<h3 class="function"><a name="mxmlSetTextf">mxmlSetTextf</a></h3>
+<p class="description">设置一个文本节点的值为一个格式化的字符串。</p>
+<p class="code"> int mxmlSetTextf (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int whitespace,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;const char *format,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;...
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">被设置的节点</dd>
+<dt>whitespace</dt>
+<dd class="description">1 = 有前导空格, 0 = 没有前导空格</dd>
+<dt>format</dt>
+<dd class="description">"printf"风格的格式化字符串</dd>
+<dt>...</dt>
+<dd class="description">需要的附加参数</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">成功返回 0，失败返回 -1。</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">如果这个节点不是一个文本节点则节点不发生改变。</p>
+<h3 class="function"><a name="8_2_49">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.3&nbsp;</a><a name="mxmlSetWrapMargin">mxmlSetWrapMargin</a></h3>
+<p class="description">设置在保存XML数据时的自动折行位置。</p>
+<p class="code"> void mxmlSetWrapMargin (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int column
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>column</dt>
+<dd class="description">自动折行的列</dd>
+</dl>
+<h4 class="discussion">说明</h4>
+<p class="discussion">当"column" is &lt;= 0时取消自动折行。</p>
+<h3 class="function"><a name="mxmlWalkNext">mxmlWalkNext</a></h3>
+<p class="description">遍历到XML树中的下一个逻辑节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlWalkNext (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int descend
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">当前节点</dd>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>descend</dt>
+<dd class="description">在XML树中的向下搜索模式 - MXML_DESCEND,
+ MXML_NO_DESCEND, 或者 MXML_DESCEND_FIRST。</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">下一个节点或者NULL</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">"descend"参数控制下一个节点是否考虑第一个子节点。"top"参数约束了遍历这个节点的所有子节点。
+</p>
+<h3 class="function"><a name="mxmlWalkPrev">mxmlWalkPrev</a></h3>
+<p class="description">遍历到XML树中的上一个逻辑节点。</p>
+<p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlWalkPrev (
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int descend
+<br> );</p>
+<h4 class="parameters">参数</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">当前节点</dd>
+<dt>top</dt>
+<dd class="description">顶级节点</dd>
+<dt>descend</dt>
+<dd class="description">在XML树中的向下搜索模式 - MXML_DESCEND,
+ MXML_NO_DESCEND, 或者 MXML_DESCEND_FIRST。</dd>
+</dl>
+<h4 class="returnvalue">返回值</h4>
+<p class="description">上一个节点或者NULL</p>
+<h4 class="discussion">说明</h4>
+<p class="discussion">"descend"参数控制下一个节点是否考虑第一个子节点。"top"参数约束了遍历这个节点的所有子节点。</p>
+<h2 class="title"><a name="TYPES">数据类型</a></h2>
+<h3 class="typedef"><a name="mxml_attr_t">mxml_attr_t</a></h3>
+<p class="description">XML元素节点的属性值。</p>
+<p class="code"> typedef struct <a href="#mxml_attr_s">mxml_attr_s</a>
+ mxml_attr_t;</p>
+<h3 class="typedef"><a name="mxml_custom_destroy_cb_t">
+mxml_custom_destroy_cb_t</a></h3>
+<p class="description">自定义数据销毁回调函数原型</p>
+<p class="code"> typedef void (*mxml_custom_destroy_cb_t)(void *);</p>
+<h3 class="typedef"><a name="mxml_custom_load_cb_t">
+mxml_custom_load_cb_t</a></h3>
+<p class="description">自定义数据加载回调函数原型</p>
+<p class="code"> typedef int (*mxml_custom_load_cb_t)(<a href="#mxml_node_t">
+mxml_node_t</a> *, const char *);</p>
+<h3 class="typedef"><a name="mxml_custom_save_cb_t">
+mxml_custom_save_cb_t</a></h3>
+<p class="description">自定义数据保存回调函数原型</p>
+<p class="code"> typedef char *(*mxml_custom_save_cb_t)(<a href="#mxml_node_t">
+mxml_node_t</a> *);</p>
+<h3 class="typedef"><a name="8_3_5">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.1&nbsp;</a><a name="mxml_custom_t">mxml_custom_t</a></h3>
+<p class="description">自定义XML类型值</p>
+<p class="code"> typedef struct <a href="#mxml_custom_s">mxml_custom_s</a>
+ mxml_custom_t;</p>
+<h3 class="typedef"><a name="mxml_element_t">mxml_element_t</a></h3>
+<p class="description">XML元素值</p>
+<p class="code"> typedef struct <a href="#mxml_element_s">mxml_element_s</a>
+ mxml_element_t;</p>
+<h3 class="typedef"><a name="mxml_error_cb_t">mxml_error_cb_t</a></h3>
+<p class="description">错误回调函数原型</p>
+<p class="code"> typedef void (*mxml_error_cb_t)(const char *);</p>
+<h3 class="typedef"><a name="mxml_index_t">mxml_index_t</a></h3>
+<p class="description">XML节点索引</p>
+<p class="code"> typedef struct <a href="#mxml_index_s">mxml_index_s</a>
+ mxml_index_t;</p>
+<h3 class="typedef"><a name="mxml_load_cb_t">mxml_load_cb_t</a></h3>
+<p class="description">加载回调函数</p>
+<p class="code"> typedef mxml_type_t (*mxml_load_cb_t)(<a href="#mxml_node_t">
+mxml_node_t</a> *);</p>
+<h3 class="typedef"><a name="mxml_node_t">mxml_node_t</a></h3>
+<p class="description">XML节点</p>
+<p class="code"> typedef struct <a href="#mxml_node_s">mxml_node_s</a>
+ mxml_node_t;</p>
+<h3 class="typedef"><a name="mxml_save_cb_t">mxml_save_cb_t</a></h3>
+<p class="description">保存回调函数</p>
+<p class="code"> typedef const char *(*mxml_save_cb_t)(<a href="#mxml_node_t">
+mxml_node_t</a> *, int);</p>
+<h3 class="typedef"><a name="mxml_sax_cb_t">mxml_sax_cb_t</a></h3>
+<p class="description">SAX 回调函数</p>
+<p class="code"> typedef void (*mxml_sax_cb_t)(<a href="#mxml_node_t">
+mxml_node_t</a> *, mxml_sax_event_t, void *);</p>
+<h3 class="typedef"><a name="mxml_sax_event_t">mxml_sax_event_t</a></h3>
+<p class="description">SAX 事件类型.</p>
+<p class="code"> typedef enum <a href="#mxml_sax_event_e">
+mxml_sax_event_e</a> mxml_sax_event_t;</p>
+<h3 class="typedef"><a name="mxml_text_t">mxml_text_t</a></h3>
+<p class="description">XML文本节点值</p>
+<p class="code"> typedef struct <a href="#mxml_text_s">mxml_text_s</a>
+ mxml_text_t;</p>
+<h3 class="typedef"><a name="mxml_value_t">mxml_value_t</a></h3>
+<p class="description">XML节点值</p>
+<p class="code"> typedef union <a href="#mxml_value_u">mxml_value_u</a>
+ mxml_value_t;</p>
+<h2 class="title"><a name="STRUCTURES">Structures</a></h2>
+<h3 class="struct"><a name="mxml_attr_s">mxml_attr_s</a></h3>
+<p class="description">XML元素的属性值</p>
+<p class="code">struct mxml_attr_s {
+<br> &nbsp;&nbsp;&nbsp;&nbsp;char *name;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;char *value;
+<br> };</p>
+<h4 class="members">成员</h4>
+<dl>
+<dt>name</dt>
+<dd class="description">属性名</dd>
+<dt>value</dt>
+<dd class="description">属性值</dd>
+</dl>
+<h3 class="struct"><a name="8_4_2">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.1&nbsp;</a><a name="mxml_custom_s">mxml_custom_s</a></h3>
+<p class="description">自定义XML节点值</p>
+<p class="code">struct mxml_custom_s {
+<br> &nbsp;&nbsp;&nbsp;&nbsp;void *data;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a>
+ destroy;
+<br> };</p>
+<h4 class="members">成员</h4>
+<dl>
+<dt>data</dt>
+<dd class="description">指向一个自定义数据的指针（已分配的）。</dd>
+<dt>destroy</dt>
+<dd class="description">指向销毁回调函数的指针</dd>
+</dl>
+<h3 class="struct"><a name="mxml_element_s">mxml_element_s</a></h3>
+<p class="description">XML元素值</p>
+<p class="code">struct mxml_element_s {
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_attr_t">mxml_attr_t</a> *attrs;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;char *name;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int num_attrs;
+<br> };</p>
+<h4 class="members">成员</h4>
+<dl>
+<dt>attrs</dt>
+<dd class="description">包含的所有属性</dd>
+<dt>name</dt>
+<dd class="description">XML元素名称</dd>
+<dt>num_attrs</dt>
+<dd class="description">包含的属性数量</dd>
+</dl>
+<h3 class="struct"><a name="mxml_index_s">mxml_index_s</a></h3>
+<p class="description">XML节点索引</p>
+<p class="code">struct mxml_index_s {
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int alloc_nodes;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;char *attr;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int cur_node;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> **nodes;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int num_nodes;
+<br> };</p>
+<h4 class="members">成员</h4>
+<dl>
+<dt>alloc_nodes</dt>
+<dd class="description">在索引中的已分配的节点数</dd>
+<dt>attr</dt>
+<dd class="description">节点使用的属性或者NULL</dd>
+<dt>cur_node</dt>
+<dd class="description">当前节点</dd>
+<dt>nodes</dt>
+<dd class="description">包含的节点数组 </dd>
+<dt>num_nodes</dt>
+<dd class="description">在索引中的节点总数</dd>
+</dl>
+<h3 class="struct"><a name="mxml_node_s">mxml_node_s</a></h3>
+<p class="description">XML 节点。</p>
+<p class="code">struct mxml_node_s {
+<br> &nbsp;&nbsp;&nbsp;&nbsp;struct <a href="#mxml_node_s">mxml_node_s</a> *child;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;struct <a href="#mxml_node_s">mxml_node_s</a> *last_child;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;struct <a href="#mxml_node_s">mxml_node_s</a> *next;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;struct <a href="#mxml_node_s">mxml_node_s</a> *parent;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;struct <a href="#mxml_node_s">mxml_node_s</a> *prev;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int ref_count;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;mxml_type_t type;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;void *user_data;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_value_t">mxml_value_t</a> value;
+<br> };</p>
+<h4 class="members">成员</h4>
+<dl>
+<dt>child</dt>
+<dd class="description">第一个子节点</dd>
+<dt>last_child</dt>
+<dd class="description">最后一个子节点</dd>
+<dt>next</dt>
+<dd class="description">同级的下一个节点（在同一个父节点下）</dd>
+<dt>parent</dt>
+<dd class="description">父节点</dd>
+<dt>prev</dt>
+<dd class="description">同级的上一个节点（在同一个父节点下）</dd>
+<dt>ref_count</dt>
+<dd class="description">使用计数器（引用计数）</dd>
+<dt>type</dt>
+<dd class="description">节点类型</dd>
+<dt>user_data</dt>
+<dd class="description">用户关联数据</dd>
+<dt>value</dt>
+<dd class="description">节点值</dd>
+</dl>
+<h3 class="struct"><a name="mxml_text_s">mxml_text_s</a></h3>
+<p class="description">XML文本节点值</p>
+<p class="code">struct mxml_text_s {
+<br> &nbsp;&nbsp;&nbsp;&nbsp;char *string;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int whitespace;
+<br> };</p>
+<h4 class="members">成员</h4>
+<dl>
+<dt>string</dt>
+<dd class="description">字符串片断</dd>
+<dt>whitespace</dt>
+<dd class="description">是否有前导空格?</dd>
+</dl>
+<h2 class="title"><a name="UNIONS">联合</a></h2>
+<h3 class="union"><a name="mxml_value_u">mxml_value_u</a></h3>
+<p class="description">XML节点值。</p>
+<p class="code">union mxml_value_u {
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_custom_t">mxml_custom_t</a> custom;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_element_t">mxml_element_t</a> element;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;int integer;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;char *opaque;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;double real;
+<br> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_text_t">mxml_text_t</a> text;
+<br> };</p>
+<h4 class="members">成员</h4>
+<dl>
+<dt>custom
+<!--span class=&quot;info&quot;-->
+ &nbsp;Mini-XML 2.1&nbsp;</dt>
+<dd class="description">自定义数据</dd>
+<dt>element</dt>
+<dd class="description">元素</dd>
+<dt>integer</dt>
+<dd class="description">整数</dd>
+<dt>opaque</dt>
+<dd class="description">不透明字符串</dd>
+<dt>real</dt>
+<dd class="description">浮点数</dd>
+<dt>text</dt>
+<dd class="description">文本片断</dd>
+</dl>
+<h2 class="title"><a name="ENUMERATIONS">常量</a></h2>
+<h3 class="enumeration"><a name="mxml_sax_event_e">mxml_sax_event_e</a></h3>
+<p class="description">SAX 事件类型。</p>
+<h4 class="constants">常量</h4>
+<dl>
+<dt>MXML_SAX_CDATA</dt>
+<dd class="description">CDATA 节点</dd>
+<dt>MXML_SAX_COMMENT</dt>
+<dd class="description">注释节点</dd>
+<dt>MXML_SAX_DATA</dt>
+<dd class="description">数据节点</dd>
+<dt>MXML_SAX_DIRECTIVE</dt>
+<dd class="description">处理指令节点</dd>
+<dt>MXML_SAX_ELEMENT_CLOSE</dt>
+<dd class="description">XML元素关闭节点</dd>
+<dt>MXML_SAX_ELEMENT_OPEN</dt>
+<dd class="description">XML元素开放节点</dd>
+</dl>
+<h3 class="enumeration"><a name="mxml_type_e">mxml_type_e</a></h3>
+<p class="description">XML 节点类型</p>
+<h4 class="constants">常量</h4>
+<dl>
+<dt>MXML_CUSTOM
+<!--span class=&quot;info&quot;-->
+ &nbsp;Mini-XML 2.1&nbsp;</dt>
+<dd class="description">自定义数据</dd>
+<dt>MXML_ELEMENT</dt>
+<dd class="description">XML 元素并包含属性</dd>
+<dt>MXML_IGNORE
+<!--span class=&quot;info&quot;-->
+ &nbsp;Mini-XML 2.3&nbsp;</dt>
+<dd class="description">忽略/抛弃的节点</dd>
+<dt>MXML_INTEGER</dt>
+<dd class="description">整数值</dd>
+<dt>MXML_OPAQUE</dt>
+<dd class="description">透明字符串值</dd>
+<dt>MXML_REAL</dt>
+<dd class="description">浮点数值</dd>
+<dt>MXML_TEXT</dt>
+<dd class="description">文本片断</dd>
+</dl>
+</div><hr noshade="noshade">
+<h1 align="right"><a name="SCHEMA"><img alt="D" src="minixml-cn_files/D.gif" align="right" height="100" hspace="10" width="100"></a>XML Schema</h1>
+<p>这个附录提供了<tt>mxmldoc</tt>程序生成XML文件时使用的XML schema。这个schema 的在线版本参见：</p>
+<pre>    http://www.easysw.com/~mike/mxmldoc.xsd
+</pre>
+<h2><a name="9_1">mxmldoc.xsd</a></h2>
+<pre><small>
+&lt;?xml version="1.0"?&gt;
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation xml:lang="en"&gt;
+      Mini-XML 2.3 documentation schema for mxmldoc output.
+      Copyright 2003-2007 by Michael Sweet.
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;!-- basic element definitions --&gt;
+  &lt;xsd:element name="argument" type="argumentType"/&gt;
+  &lt;xsd:element name="class" type="classType"/&gt;
+  &lt;xsd:element name="constant" type="constantType"/&gt;
+  &lt;xsd:element name="description" type="xsd:string"/&gt;
+  &lt;xsd:element name="enumeration" type="enumerationType"/&gt;
+  &lt;xsd:element name="function" type="functionType"/&gt;
+  &lt;xsd:element name="mxmldoc" type="mxmldocType"/&gt;
+  &lt;xsd:element name="namespace" type="namespaceType"/&gt;
+  &lt;xsd:element name="returnvalue" type="returnvalueType"/&gt;
+  &lt;xsd:element name="seealso" type="identifierList"/&gt;
+  &lt;xsd:element name="struct" type="structType"/&gt;
+  &lt;xsd:element name="typedef" type="typedefType"/&gt;
+  &lt;xsd:element name="type" type="xsd:string"/&gt;
+  &lt;xsd:element name="union" type="unionType"/&gt;
+  &lt;xsd:element name="variable" type="variableType"/&gt;
+
+  &lt;!-- descriptions of complex elements --&gt;
+  &lt;xsd:complexType name="argumentType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="default" type="xsd:string" use="optional"/&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+    &lt;xsd:attribute name="direction" type="direction" use="optional"
+     default="I"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="classType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+	&lt;xsd:element ref="class"/&gt;
+	&lt;xsd:element ref="enumeration"/&gt;
+	&lt;xsd:element ref="function"/&gt;
+	&lt;xsd:element ref="struct"/&gt;
+	&lt;xsd:element ref="typedef"/&gt;
+	&lt;xsd:element ref="union"/&gt;
+	&lt;xsd:element ref="variable"/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+    &lt;xsd:attribute name="parent" type="xsd:string" use="optional"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="constantType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="enumerationType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="constant" minOccurs="1" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="functionType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="returnvalue" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="argument" minOccurs="1" maxOccurs="unbounded"/&gt;
+      &lt;xsd:element ref="seealso" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+    &lt;xsd:attribute name="scope" type="scope" use="optional"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="mxmldocType"&gt;
+    &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+      &lt;xsd:element ref="class"/&gt;
+      &lt;xsd:element ref="enumeration"/&gt;
+      &lt;xsd:element ref="function"/&gt;
+      &lt;xsd:element ref="namespace"/&gt;
+      &lt;xsd:element ref="struct"/&gt;
+      &lt;xsd:element ref="typedef"/&gt;
+      &lt;xsd:element ref="union"/&gt;
+      &lt;xsd:element ref="variable"/&gt;
+    &lt;/xsd:choice&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="namespaceType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+	&lt;xsd:element ref="class"/&gt;
+	&lt;xsd:element ref="enumeration"/&gt;
+	&lt;xsd:element ref="function"/&gt;
+	&lt;xsd:element ref="struct"/&gt;
+	&lt;xsd:element ref="typedef"/&gt;
+	&lt;xsd:element ref="union"/&gt;
+	&lt;xsd:element ref="variable"/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="returnvalueType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="structType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+	&lt;xsd:element ref="variable"/&gt;
+	&lt;xsd:element ref="function"/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="typedefType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="unionType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="variableType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;!-- data types --&gt;
+  &lt;xsd:simpleType name="direction"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:enumeration value="I"/&gt;
+      &lt;xsd:enumeration value="O"/&gt;
+      &lt;xsd:enumeration value="IO"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="identifier"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:pattern value="[a-zA-Z_(.]([a-zA-Z_(.,)* 0-9])*"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="identifierList"&gt;
+    &lt;xsd:list itemType="identifier"/&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="scope"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:enumeration value=""/&gt;
+      &lt;xsd:enumeration value="private"/&gt;
+      &lt;xsd:enumeration value="protected"/&gt;
+      &lt;xsd:enumeration value="public"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+&lt;/xsd:schema&gt;
+</small></pre>
+</body></html>
