@@ -6,7 +6,10 @@ int main(int argc,char *argv[])
 {
 	if(argc<4)
 	{
-		printf("TCP数据传输监测代理工具启动参数:\r\n\r\n[目标域名或IP] [目标IP] [本地监听端口]\r\n\r\n");
+		printf("-- TCP数据传输监测代理工具\r\n");
+		printf("-- 作者: Han Zhi Hong\r\n");
+		printf("-- 启动参数:\r\n\r\n[目标域名或IP] [目标端口] [本地监听端口]\r\n\r\n");
+		printf("-- 例: tcp_proxy.exe hanzhihong.cn 80 1000 \r\n\r\n");
 		system("pause");
 		exit(0);
 	}
@@ -17,7 +20,7 @@ int main(int argc,char *argv[])
 	printf("-- 作者: Han Zhi Hong\r\n");
 	printf("-- 产品网址: http://www.hx-kong.com\r\n");
 	printf("-- 韩讯联控\r\n");
-	printf("-- 版本v1.0\r\n");	
+	printf("-- 版本v1.0.1\r\n");	
 	printf("--\r\n");
 	printf("------------------------------------------------------------------\r\n");
 	printf("\r\n");
